@@ -70,10 +70,146 @@ public class Solution {
             }
         }
         return maxLen;
+    }
 
+    //    647. 回文子串
+    public int countSubstrings(String s) {
+        int len = s.length();
+        int res = 0;
+        boolean[][] dp = new boolean[len][len];
+        //从最后一个元素开始
+        for (int L = len - 1; L >= 0; L--) {
+            for (int R = L; R < len; R++) {
+                if (s.charAt(L) == s.charAt(R) && (R <= 1 + L || dp[L + 1][R - 1])) {
+                    res++;
+                    dp[L][R] = true;
+
+                }
+
+            }
+        }
+        return res;
 
     }
-//↑↑↑↑↑ -- 动态规划--↑↑↑↑↑↑↑
+    //392.判断子序列
+    public boolean isSubsequence(String s, String t) {
+        int len_s =s.length();
+        int len_t = t.length();
+        if(len_s > len_t) return false;
+        //dp[i][j]表示 s中[0,i）和t[0,j）中相同子序列的最大长度
+        int[][] dp = new int [len_s+1][len_t+1];
+        for(int s_endIndex=1; s_endIndex<=len_s;s_endIndex++){
+            for(int t_endIndex=1; t_endIndex<=len_t ; t_endIndex++){
+                if(s.charAt(s_endIndex-1) == t.charAt(t_endIndex-1))
+                    dp[s_endIndex][t_endIndex]=dp[s_endIndex-1][t_endIndex-1]+1;
+                else
+                    dp[s_endIndex][t_endIndex]=dp[s_endIndex][t_endIndex-1];
+            }
+        }
+        return dp[len_s][len_t] == len_s;
+    }
+    //115.不同的子序列
+    public int numDistinct(String s, String t) {
+        int len_s = s.length();
+        int len_t = t.length();
+        if(len_s<len_t) return 0;
+        //以i-1为结尾的s子序列中出现以j-1为结尾的t的个数为dp[i][j]。
+        int[][] dp = new int[len_s+1][len_t+1];
+        for(int i=0 ; i <= len_s;i++)
+            dp[i][0] =1;
+
+        for(int i=1; i<=len_s;i++){
+            for(int j=1 ; j<=len_t ; j++){
+                if(s.charAt(i-1) == t.charAt(j-1))
+                    dp[i][j]=dp[i-1][j-1] + dp[i-1][j];
+                else
+                    dp[i][j]=dp[i-1][j];
+            }
+        }
+        return dp[len_s][len_t];
+    }
+    //583. 两个字符串的删除操作
+    public int minDistance(String word1, String word2) {
+        int len1=word1.length();
+        int len2=word2.length();
+        //dp[i][j]：以i-1为结尾的字符串word1，和以j-1位结尾的字符串word2，想要达到相等，所需要删除元素的最少次数。
+        int[][] dp=new int[len1+1][1+len2];//dp[i][j]标识word1[0,i-1]于word2[0,j-1]的最小步数
+
+        for(int i= 0 ; i<len1+1;i++){
+            dp[i][0] = i;
+        }
+        for(int j= 0 ; j<len2+1;j++){
+            dp[0][j] = j;
+        }
+
+        for(int i=1 ; i<len1+1;i++){
+            for(int j=1 ; j<len2+1;j++){
+                if(word1.charAt(i-1) == word2.charAt(j-1)){
+                    dp[i][j]=dp[i-1][j-1];
+                }else{
+                    dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1);
+                }
+            }
+        }
+
+        return dp[len1][len2];
+    }
+    //72.编辑距离
+    public int minDistance21(String word1, String word2) {
+        int len1=word1.length();
+        int len2=word2.length();
+
+        int[][] dp=new int[len1+1][1+len2];//dp[i][j]标识word1[0,i-1]于word2[0,j-1]的最小步数
+
+        for(int i= 0 ; i<len1+1;i++){
+            dp[i][0] = i;
+        }
+        for(int j= 0 ; j<len2+1;j++){
+            dp[0][j] = j;
+        }
+
+        for(int i=1 ; i<len1+1;i++){
+            for(int j=1 ; j<len2+1;j++){
+                if(word1.charAt(i-1) == word2.charAt(j-1)){
+                    dp[i][j]=dp[i-1][j-1];
+                }else{
+                    int temp=Math.min(dp[i-1][j]+1,dp[i-1][j-1]+1);
+                    dp[i][j]=Math.min(temp,dp[i][j-1]+1);
+                }
+            }
+        }
+
+        return dp[len1][len2];
+    }
+    // 72. 编辑距离 递归
+    int[][] memo;
+    public int minDistance22(String word1, String word2) {
+
+        int len1 = word1.length();
+        int len2 = word2.length();
+        memo = new int[len1][len2];
+        return fun(word1, word2, len1 - 1, len2 - 1);
+    }
+
+    private int fun(String word1, String word2, int index1, int index2) {
+        if (index1 == -1 || index2 == -1) {
+            return Math.max(index2, index1) + 1;
+        }
+        if (memo[index1][index2] != 0) {
+            return memo[index1][index2];
+        }
+        if (word1.charAt(index1) == word2.charAt(index2)) {
+            memo[index1][index2] = fun(word1, word2, index1 - 1, index2 - 1);
+            return memo[index1][index2];
+        }
+
+
+        memo[index1][index2] = 0;
+        int temp = Math.min(fun(word1, word2, index1, index2 - 1), fun(word1, word2, index1 - 1, index2 - 1));
+        memo[index1][index2] = 1 + Math.min(temp, fun(word1, word2, index1 - 1, index2));
+        return memo[index1][index2];
+    }
+    //↑↑↑↑↑ -- 动态规划--↑↑↑↑↑↑↑
     //93.复原IP地址
     public List<String> restoreIpAddresses(String s) {
         List<String> ans = new ArrayList<>();
@@ -1152,35 +1288,7 @@ public class Solution {
 
     }
 
-    // 72. 编辑距离 （Very Hard ）
-    int[][] memo;
 
-    public int minDistance(String word1, String word2) {
-
-        int len1 = word1.length();
-        int len2 = word2.length();
-        memo = new int[len1][len2];
-        return fun(word1, word2, len1 - 1, len2 - 1);
-    }
-
-    private int fun(String word1, String word2, int index1, int index2) {
-        if (index1 == -1 || index2 == -1) {
-            return Math.max(index2, index1) + 1;
-        }
-        if (memo[index1][index2] != 0) {
-            return memo[index1][index2];
-        }
-        if (word1.charAt(index1) == word2.charAt(index2)) {
-            memo[index1][index2] = fun(word1, word2, index1 - 1, index2 - 1);
-            return memo[index1][index2];
-        }
-
-
-        memo[index1][index2] = 0;
-        int temp = Math.min(fun(word1, word2, index1, index2 - 1), fun(word1, word2, index1 - 1, index2 - 1));
-        memo[index1][index2] = 1 + Math.min(temp, fun(word1, word2, index1 - 1, index2));
-        return memo[index1][index2];
-    }
 
     //75. 颜色分类 (荷兰国旗问题)
     public void sortColors(int[] nums) {
