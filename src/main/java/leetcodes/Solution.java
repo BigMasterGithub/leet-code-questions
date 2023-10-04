@@ -91,98 +91,104 @@ public class Solution {
         return res;
 
     }
+
     //392.判断子序列
     public boolean isSubsequence(String s, String t) {
-        int len_s =s.length();
+        int len_s = s.length();
         int len_t = t.length();
-        if(len_s > len_t) return false;
+        if (len_s > len_t) return false;
         //dp[i][j]表示 s中[0,i）和t[0,j）中相同子序列的最大长度
-        int[][] dp = new int [len_s+1][len_t+1];
-        for(int s_endIndex=1; s_endIndex<=len_s;s_endIndex++){
-            for(int t_endIndex=1; t_endIndex<=len_t ; t_endIndex++){
-                if(s.charAt(s_endIndex-1) == t.charAt(t_endIndex-1))
-                    dp[s_endIndex][t_endIndex]=dp[s_endIndex-1][t_endIndex-1]+1;
+        int[][] dp = new int[len_s + 1][len_t + 1];
+        for (int s_endIndex = 1; s_endIndex <= len_s; s_endIndex++) {
+            for (int t_endIndex = 1; t_endIndex <= len_t; t_endIndex++) {
+                if (s.charAt(s_endIndex - 1) == t.charAt(t_endIndex - 1))
+                    dp[s_endIndex][t_endIndex] = dp[s_endIndex - 1][t_endIndex - 1] + 1;
                 else
-                    dp[s_endIndex][t_endIndex]=dp[s_endIndex][t_endIndex-1];
+                    dp[s_endIndex][t_endIndex] = dp[s_endIndex][t_endIndex - 1];
             }
         }
         return dp[len_s][len_t] == len_s;
     }
+
     //115.不同的子序列
     public int numDistinct(String s, String t) {
         int len_s = s.length();
         int len_t = t.length();
-        if(len_s<len_t) return 0;
+        if (len_s < len_t) return 0;
         //以i-1为结尾的s子序列中出现以j-1为结尾的t的个数为dp[i][j]。
-        int[][] dp = new int[len_s+1][len_t+1];
-        for(int i=0 ; i <= len_s;i++)
-            dp[i][0] =1;
+        int[][] dp = new int[len_s + 1][len_t + 1];
+        for (int i = 0; i <= len_s; i++)
+            dp[i][0] = 1;
 
-        for(int i=1; i<=len_s;i++){
-            for(int j=1 ; j<=len_t ; j++){
-                if(s.charAt(i-1) == t.charAt(j-1))
-                    dp[i][j]=dp[i-1][j-1] + dp[i-1][j];
+        for (int i = 1; i <= len_s; i++) {
+            for (int j = 1; j <= len_t; j++) {
+                if (s.charAt(i - 1) == t.charAt(j - 1))
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
                 else
-                    dp[i][j]=dp[i-1][j];
+                    dp[i][j] = dp[i - 1][j];
             }
         }
         return dp[len_s][len_t];
     }
+
     //583. 两个字符串的删除操作
     public int minDistance(String word1, String word2) {
-        int len1=word1.length();
-        int len2=word2.length();
+        int len1 = word1.length();
+        int len2 = word2.length();
         //dp[i][j]：以i-1为结尾的字符串word1，和以j-1位结尾的字符串word2，想要达到相等，所需要删除元素的最少次数。
-        int[][] dp=new int[len1+1][1+len2];//dp[i][j]标识word1[0,i-1]于word2[0,j-1]的最小步数
+        int[][] dp = new int[len1 + 1][1 + len2];//dp[i][j]标识word1[0,i-1]于word2[0,j-1]的最小步数
 
-        for(int i= 0 ; i<len1+1;i++){
+        for (int i = 0; i < len1 + 1; i++) {
             dp[i][0] = i;
         }
-        for(int j= 0 ; j<len2+1;j++){
+        for (int j = 0; j < len2 + 1; j++) {
             dp[0][j] = j;
         }
 
-        for(int i=1 ; i<len1+1;i++){
-            for(int j=1 ; j<len2+1;j++){
-                if(word1.charAt(i-1) == word2.charAt(j-1)){
-                    dp[i][j]=dp[i-1][j-1];
-                }else{
-                    dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1);
+        for (int i = 1; i < len1 + 1; i++) {
+            for (int j = 1; j < len2 + 1; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1);
                 }
             }
         }
 
         return dp[len1][len2];
     }
+
     //72.编辑距离
     public int minDistance21(String word1, String word2) {
-        int len1=word1.length();
-        int len2=word2.length();
+        int len1 = word1.length();
+        int len2 = word2.length();
 
-        int[][] dp=new int[len1+1][1+len2];//dp[i][j]标识word1[0,i-1]于word2[0,j-1]的最小步数
+        int[][] dp = new int[len1 + 1][1 + len2];//dp[i][j]标识word1[0,i-1]于word2[0,j-1]的最小步数
 
-        for(int i= 0 ; i<len1+1;i++){
+        for (int i = 0; i < len1 + 1; i++) {
             dp[i][0] = i;
         }
-        for(int j= 0 ; j<len2+1;j++){
+        for (int j = 0; j < len2 + 1; j++) {
             dp[0][j] = j;
         }
 
-        for(int i=1 ; i<len1+1;i++){
-            for(int j=1 ; j<len2+1;j++){
-                if(word1.charAt(i-1) == word2.charAt(j-1)){
-                    dp[i][j]=dp[i-1][j-1];
-                }else{
-                    int temp=Math.min(dp[i-1][j]+1,dp[i-1][j-1]+1);
-                    dp[i][j]=Math.min(temp,dp[i][j-1]+1);
+        for (int i = 1; i < len1 + 1; i++) {
+            for (int j = 1; j < len2 + 1; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    int temp = Math.min(dp[i - 1][j] + 1, dp[i - 1][j - 1] + 1);
+                    dp[i][j] = Math.min(temp, dp[i][j - 1] + 1);
                 }
             }
         }
 
         return dp[len1][len2];
     }
+
     // 72. 编辑距离 递归
     int[][] memo;
+
     public int minDistance22(String word1, String word2) {
 
         int len1 = word1.length();
@@ -208,6 +214,102 @@ public class Solution {
         int temp = Math.min(fun(word1, word2, index1, index2 - 1), fun(word1, word2, index1 - 1, index2 - 1));
         memo[index1][index2] = 1 + Math.min(temp, fun(word1, word2, index1 - 1, index2));
         return memo[index1][index2];
+    }
+
+    //121. 买卖股票的最佳时机
+    public int maxProfit_121(int[] prices) {
+        if (prices == null || prices.length == 0) return 0;
+        int[][] dp = new int[prices.length][2];
+        //dp[i][0]表示第i天持有股票获得最大收益
+        //dp[i][1]表示第i天不持有股票获得最大收益
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], -prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][0] + prices[i], dp[i - 1][1]);
+
+        }
+        return dp[prices.length - 1][1];
+    }
+
+    //122.买卖股票的最佳时机II
+    public int maxProfit_122(int[] prices) {
+        if (prices == null || prices.length == 0) return 0;
+        int[][] dp = new int[prices.length][2];
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] - prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+        }
+        return dp[prices.length - 1][1];
+    }
+    //123.买卖股票的最佳时机III
+    public int maxProfit_123(int[] prices) {
+        int len = prices.length;
+        if(len == 0 ) return 0 ;
+        int[][] dp= new int[len][5];
+        //dp[i][1]表示第i天，第一次持有股票
+        //dp[i][2]表示第i天，第一次不持有股票
+        //dp[i][3]表示第i天，第二次持有股票
+        //dp[i][4]表示第i天，第二次不持有股票
+        dp[0][1]=-prices[0];
+        dp[0][2]=0;
+        dp[0][3]=-prices[0];
+        dp[0][4]=0;
+        for(int i= 1 ; i< len ; i++){
+            dp[i][1] = Math.max(dp[i-1][1],-prices[i]) ;
+            dp[i][2] = Math.max(dp[i-1][2],dp[i-1][1]+prices[i]) ;
+            dp[i][3] = Math.max(dp[i-1][3],dp[i-1][2]-prices[i]) ;
+            dp[i][4] = Math.max(dp[i-1][4],dp[i-1][3]+prices[i]) ;
+        }
+        return dp[len-1][4];
+    }
+    //188.买卖股票的最佳时机IV
+    public int maxProfit_188(int[] prices,int k){
+        if(prices==null || prices.length == 0 || k<=0)
+            return 0;
+        int[][] dp = new int[prices.length][k*2+1] ;//奇书表水手里有股票最高收益，偶数表示当前手里没票时最高收益
+        dp[0][0]=0;
+        for(int i = 0 ; i <2*k+1 ;i++){
+            if(i%2!=0)
+                dp[0][i]=-prices[0];
+            else
+                dp[0][i]=0;
+        }
+
+        for(int i= 1 ; i < prices.length ; i++){
+            for(int j=0; j<2*k-1;j+=2){
+                dp[i][j+1]=Math.max(dp[i-1][j+1],dp[i-1][j]-prices[i]); //持有
+                dp[i][j+2]=Math.max(dp[i-1][j+2],dp[i-1][j+1]+prices[i]);
+            }
+        }
+        return dp[prices.length-1][2*k];
+    }
+    //309.最佳买卖股票时机含冷冻期
+    public int maxProfit_309(int[] prices) {
+        if(prices == null || prices.length ==0||prices.length==1) return 0;
+        int[][] dp = new int[prices.length][2];
+        dp[0][0]=-prices[0];
+        dp[1][0]=Math.max(dp[0][0],-prices[1]);
+        dp[1][1]=Math.max(0,dp[0][0]+prices[1]);
+        for(int i=2 ; i < prices.length ;i++){
+            dp[i][0]=Math.max(dp[i-1][0],dp[i-2][1]-prices[i]);
+            dp[i][1]=Math.max(dp[i-1][1],dp[i-1][0]+prices[i]);
+        }
+        return dp[ prices.length-1][1];
+    }
+    //714.买卖股票的最佳时机含手续费
+    public int maxProfit_714(int[] prices, int fee) {
+        if(prices == null ||prices.length == 0) return 0;
+
+        int[][] dp = new int[prices.length][2];
+        dp[0][0]=-prices[0];
+        for(int i=1; i< prices.length ; i++){
+            dp[i][0]=Math.max(dp[i-1][0],dp[i-1][1]-prices[i]);
+            dp[i][1]=Math.max(dp[i-1][1],dp[i-1][0]+prices[i]-fee);
+        }
+        return dp[prices.length-1][1];
     }
     //↑↑↑↑↑ -- 动态规划--↑↑↑↑↑↑↑
     //93.复原IP地址
@@ -1289,7 +1391,6 @@ public class Solution {
     }
 
 
-
     //75. 颜色分类 (荷兰国旗问题)
     public void sortColors(int[] nums) {
         //[0,L]为 0
@@ -1583,23 +1684,7 @@ public class Solution {
 
     }
 
-    // 121. 买卖股票的最佳时机
-    public int maxProfit(int[] prices) {
 
-        int len = prices.length;
-        int minBuyPrice = Integer.MAX_VALUE;
-        int max = 0;
-
-        for (int i = 0; i < len; i++) {
-            if (prices[i] < minBuyPrice) {
-                minBuyPrice = prices[i];
-            } else if (prices[i] - minBuyPrice > max) {
-                max = prices[i] - minBuyPrice;
-            }
-        }
-
-        return max;
-    }
 
     // 124. 二叉树中的最大路径和
     int maxSum = Integer.MIN_VALUE;
