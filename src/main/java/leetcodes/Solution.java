@@ -6,6 +6,7 @@ import data.structure.TreeNode;
 import cn.hutool.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -43,54 +44,123 @@ public class Solution {
 
 //        System.out.println(strings);
 
+        BigDecimal bigDecimal = new BigDecimal("4.44");
+        BigDecimal decimal = new BigDecimal(4.44);
+        BigDecimal valueOf = BigDecimal.valueOf(4.44);
+        BigDecimal bigDecimal2 = new BigDecimal(999999999999L);
+        BigDecimal valueOf2 = BigDecimal.valueOf(999999999999L);
+        System.err.println("bigDecimal="+bigDecimal);
+        System.err.println("decimal="+decimal);
+        System.err.println("valueOf="+valueOf);
+        System.err.println("bigDecimal2="+bigDecimal2);
+        System.err.println("valueOf2="+valueOf2);
+       double double_param=2e2;
+        System.out.println(double_param);
+       HashMap<Integer,Integer> hashMap_param= new HashMap();
+        hashMap_param.put(null,3);
+        hashMap_param.put(null,4);
+
     }
 
     //动态规划章节：
-//    516.最长回文子序列
-    public int longestPalindromeSubseq(String s) {
+    //300. 最长递增子序列  动态规划时间复杂度O(N^2)
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        int ans = 1;
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) dp[i] = Math.max(dp[i], dp[j] + 1);
+            }
+            ans = Math.max(ans, dp[i]);
 
-        int len = s.length();
-        int maxLen = 1;
-        int[][] dp = new int[len][len];
-        for (int i = 0; i < len; i++) {
-            dp[i][i] = 1;
+
         }
-        for (int L = len - 1; L >= 0; L--) {
-            for (int R = L + 1; R < len; R++) {
-                if (s.charAt(R) == s.charAt(L)) {
-                    dp[L][R] = 2 + dp[L + 1][R - 1];
+        return ans;
+    }
 
+    //674. 最长连续递增序列
+    public int findLengthOfLCIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        int ans = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > nums[i - 1]) dp[i] = dp[i - 1] + 1;
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+
+    //718. 最长重复子数组
+    public int findLength(int[] nums1, int[] nums2) {
+        int len1 = nums1.length;
+        int len2 = nums2.length;
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        dp[0][0] = 0;
+        int ans = 0;
+
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                if (nums1[i - 1] == nums2[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+                ans = Math.max(ans, dp[i][j]);
+            }
+        }
+        return ans;
+    }
+
+    //1143.最长公共子序列 经典LCS
+    public int longestCommonSubsequence(String text1, String text2) {
+        int len1 = text1.length();
+        int len2 = text2.length();
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+
+        }
+        return dp[len1][len2];
+    }
+
+    //1035.不相交的线
+    public int maxUncrossedLines(int[] nums1, int[] nums2) {
+        int len1 = nums1.length;
+        int len2 = nums2.length;
+        int[][] dp = new int[len1 + 1][len2 + 1];
+
+        for (int i = 1; i <= len1; i++) {
+            for (int j = 1; j <= len2; j++) {
+                if (nums1[i - 1] == nums2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
                 } else {
-                    dp[L][R] = Math.max(dp[L][R - 1], dp[L + 1][R]);
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
                 }
-                if (dp[L][R] > maxLen) {
-                    maxLen = dp[L][R];
-                }
-
             }
         }
-        return maxLen;
+
+        return dp[len1][len2];
     }
 
-    //    647. 回文子串
-    public int countSubstrings(String s) {
-        int len = s.length();
-        int res = 0;
-        boolean[][] dp = new boolean[len][len];
-        //从最后一个元素开始
-        for (int L = len - 1; L >= 0; L--) {
-            for (int R = L; R < len; R++) {
-                if (s.charAt(L) == s.charAt(R) && (R <= 1 + L || dp[L + 1][R - 1])) {
-                    res++;
-                    dp[L][R] = true;
+    //53. 最大子数组和
+    public int maxSubArray(int[] nums) {
 
-                }
+        int len = nums.length;
 
-            }
+        if (len == 0) return -1;
+        //dp[i]表示[0,i]包含nums【i】的最大子数组和
+        int[] dp = new int[len];
+        dp[0] = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < len; i++) {
+            dp[i] = Math.max(nums[i], dp[i - 1] + nums[i]);
+            max = Math.max(dp[i], max);
         }
-        return res;
+        return max;
 
     }
+
 
     //392.判断子序列
     public boolean isSubsequence(String s, String t) {
@@ -103,8 +173,7 @@ public class Solution {
             for (int t_endIndex = 1; t_endIndex <= len_t; t_endIndex++) {
                 if (s.charAt(s_endIndex - 1) == t.charAt(t_endIndex - 1))
                     dp[s_endIndex][t_endIndex] = dp[s_endIndex - 1][t_endIndex - 1] + 1;
-                else
-                    dp[s_endIndex][t_endIndex] = dp[s_endIndex][t_endIndex - 1];
+                else dp[s_endIndex][t_endIndex] = dp[s_endIndex][t_endIndex - 1];
             }
         }
         return dp[len_s][len_t] == len_s;
@@ -122,10 +191,8 @@ public class Solution {
 
         for (int i = 1; i <= len_s; i++) {
             for (int j = 1; j <= len_t; j++) {
-                if (s.charAt(i - 1) == t.charAt(j - 1))
-                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
-                else
-                    dp[i][j] = dp[i - 1][j];
+                if (s.charAt(i - 1) == t.charAt(j - 1)) dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                else dp[i][j] = dp[i - 1][j];
             }
         }
         return dp[len_s][len_t];
@@ -186,7 +253,7 @@ public class Solution {
         return dp[len1][len2];
     }
 
-    // 72. 编辑距离 递归
+    //72. 编辑距离 递归
     int[][] memo;
 
     public int minDistance22(String word1, String word2) {
@@ -198,6 +265,8 @@ public class Solution {
     }
 
     private int fun(String word1, String word2, int index1, int index2) {
+//        char, byte, short, int, Character, Byte, Short, Integer, String, or an enum
+
         if (index1 == -1 || index2 == -1) {
             return Math.max(index2, index1) + 1;
         }
@@ -215,6 +284,52 @@ public class Solution {
         memo[index1][index2] = 1 + Math.min(temp, fun(word1, word2, index1 - 1, index2));
         return memo[index1][index2];
     }
+
+    // 647. 回文子串（给定一个字符串，你的任务是计算这个字符串中有多少个回文子串）
+    public int countSubstrings(String s) {
+        int len = s.length();
+        int res = 0;
+        boolean[][] dp = new boolean[len][len];
+        //从最后一个元素开始
+        for (int L = len - 1; L >= 0; L--) {
+            for (int R = L; R < len; R++) {
+                if (s.charAt(L) == s.charAt(R) && (R <= 1 + L || dp[L + 1][R - 1])) {
+                    res++;
+                    dp[L][R] = true;
+
+                }
+
+            }
+        }
+        return res;
+
+    }
+
+    //516.最长回文子序列（）
+    public int longestPalindromeSubseq(String s) {
+        int len = s.length();
+        int maxLen = 1;
+        int[][] dp = new int[len][len];
+        for (int i = 0; i < len; i++) {
+            dp[i][i] = 1;
+        }
+        for (int L = len - 1; L >= 0; L--) {
+            for (int R = L + 1; R < len; R++) {
+                if (s.charAt(R) == s.charAt(L)) {
+                    dp[L][R] = 2 + dp[L + 1][R - 1];
+
+                } else {
+                    dp[L][R] = Math.max(dp[L][R - 1], dp[L + 1][R]);
+                }
+                if (dp[L][R] > maxLen) {
+                    maxLen = dp[L][R];
+                }
+
+            }
+        }
+        return maxLen;
+    }
+
 
     //121. 买卖股票的最佳时机
     public int maxProfit_121(int[] prices) {
@@ -244,74 +359,77 @@ public class Solution {
         }
         return dp[prices.length - 1][1];
     }
+
     //123.买卖股票的最佳时机III
     public int maxProfit_123(int[] prices) {
         int len = prices.length;
-        if(len == 0 ) return 0 ;
-        int[][] dp= new int[len][5];
+        if (len == 0) return 0;
+        int[][] dp = new int[len][5];
         //dp[i][1]表示第i天，第一次持有股票
         //dp[i][2]表示第i天，第一次不持有股票
         //dp[i][3]表示第i天，第二次持有股票
         //dp[i][4]表示第i天，第二次不持有股票
-        dp[0][1]=-prices[0];
-        dp[0][2]=0;
-        dp[0][3]=-prices[0];
-        dp[0][4]=0;
-        for(int i= 1 ; i< len ; i++){
-            dp[i][1] = Math.max(dp[i-1][1],-prices[i]) ;
-            dp[i][2] = Math.max(dp[i-1][2],dp[i-1][1]+prices[i]) ;
-            dp[i][3] = Math.max(dp[i-1][3],dp[i-1][2]-prices[i]) ;
-            dp[i][4] = Math.max(dp[i-1][4],dp[i-1][3]+prices[i]) ;
+        dp[0][1] = -prices[0];
+        dp[0][2] = 0;
+        dp[0][3] = -prices[0];
+        dp[0][4] = 0;
+        for (int i = 1; i < len; i++) {
+            dp[i][1] = Math.max(dp[i - 1][1], -prices[i]);
+            dp[i][2] = Math.max(dp[i - 1][2], dp[i - 1][1] + prices[i]);
+            dp[i][3] = Math.max(dp[i - 1][3], dp[i - 1][2] - prices[i]);
+            dp[i][4] = Math.max(dp[i - 1][4], dp[i - 1][3] + prices[i]);
         }
-        return dp[len-1][4];
+        return dp[len - 1][4];
     }
+
     //188.买卖股票的最佳时机IV
-    public int maxProfit_188(int[] prices,int k){
-        if(prices==null || prices.length == 0 || k<=0)
-            return 0;
-        int[][] dp = new int[prices.length][k*2+1] ;//奇书表水手里有股票最高收益，偶数表示当前手里没票时最高收益
-        dp[0][0]=0;
-        for(int i = 0 ; i <2*k+1 ;i++){
-            if(i%2!=0)
-                dp[0][i]=-prices[0];
-            else
-                dp[0][i]=0;
+    public int maxProfit_188(int[] prices, int k) {
+        if (prices == null || prices.length == 0 || k <= 0) return 0;
+        int[][] dp = new int[prices.length][k * 2 + 1];//奇书表水手里有股票最高收益，偶数表示当前手里没票时最高收益
+        dp[0][0] = 0;
+        for (int i = 0; i < 2 * k + 1; i++) {
+            if (i % 2 != 0) dp[0][i] = -prices[0];
+            else dp[0][i] = 0;
         }
 
-        for(int i= 1 ; i < prices.length ; i++){
-            for(int j=0; j<2*k-1;j+=2){
-                dp[i][j+1]=Math.max(dp[i-1][j+1],dp[i-1][j]-prices[i]); //持有
-                dp[i][j+2]=Math.max(dp[i-1][j+2],dp[i-1][j+1]+prices[i]);
+        for (int i = 1; i < prices.length; i++) {
+            for (int j = 0; j < 2 * k - 1; j += 2) {
+                dp[i][j + 1] = Math.max(dp[i - 1][j + 1], dp[i - 1][j] - prices[i]); //持有
+                dp[i][j + 2] = Math.max(dp[i - 1][j + 2], dp[i - 1][j + 1] + prices[i]);
             }
         }
-        return dp[prices.length-1][2*k];
+        return dp[prices.length - 1][2 * k];
     }
+
     //309.最佳买卖股票时机含冷冻期
     public int maxProfit_309(int[] prices) {
-        if(prices == null || prices.length ==0||prices.length==1) return 0;
+        if (prices == null || prices.length == 0 || prices.length == 1) return 0;
         int[][] dp = new int[prices.length][2];
-        dp[0][0]=-prices[0];
-        dp[1][0]=Math.max(dp[0][0],-prices[1]);
-        dp[1][1]=Math.max(0,dp[0][0]+prices[1]);
-        for(int i=2 ; i < prices.length ;i++){
-            dp[i][0]=Math.max(dp[i-1][0],dp[i-2][1]-prices[i]);
-            dp[i][1]=Math.max(dp[i-1][1],dp[i-1][0]+prices[i]);
+        dp[0][0] = -prices[0];
+        dp[1][0] = Math.max(dp[0][0], -prices[1]);
+        dp[1][1] = Math.max(0, dp[0][0] + prices[1]);
+        for (int i = 2; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 2][1] - prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
         }
-        return dp[ prices.length-1][1];
+        return dp[prices.length - 1][1];
     }
+
     //714.买卖股票的最佳时机含手续费
     public int maxProfit_714(int[] prices, int fee) {
-        if(prices == null ||prices.length == 0) return 0;
+        if (prices == null || prices.length == 0) return 0;
 
         int[][] dp = new int[prices.length][2];
-        dp[0][0]=-prices[0];
-        for(int i=1; i< prices.length ; i++){
-            dp[i][0]=Math.max(dp[i-1][0],dp[i-1][1]-prices[i]);
-            dp[i][1]=Math.max(dp[i-1][1],dp[i-1][0]+prices[i]-fee);
+        dp[0][0] = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] - prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] + prices[i] - fee);
         }
-        return dp[prices.length-1][1];
+        return dp[prices.length - 1][1];
     }
+
     //↑↑↑↑↑ -- 动态规划--↑↑↑↑↑↑↑
+
     //93.复原IP地址
     public List<String> restoreIpAddresses(String s) {
         List<String> ans = new ArrayList<>();
@@ -1280,23 +1398,6 @@ public class Solution {
         return new ArrayList<>(map.values());
     }
 
-    //53. 最大子数组和
-    public int maxSubArray(int[] nums) {
-
-        int len = nums.length;
-
-        if (len == 0) return -1;
-        //dp[i]表示[0,i]包含nums【i】的最大子数组和
-        int[] dp = new int[len];
-        dp[0] = nums[0];
-        int max = nums[0];
-        for (int i = 1; i < len; i++) {
-            dp[i] = Math.max(nums[i], dp[i - 1] + nums[i]);
-            max = Math.max(dp[i], max);
-        }
-        return max;
-
-    }
 
     // 55. 跳跃游戏
     public boolean canJump(int[] nums) {
@@ -1683,7 +1784,6 @@ public class Solution {
         }
 
     }
-
 
 
     // 124. 二叉树中的最大路径和
@@ -2616,23 +2716,8 @@ public class Solution {
         }
     }
 
-    //    300. 最长递增子序列  动态规划时间复杂度O(N^2)
-    public int lengthOfLIS(int[] nums) {
-        int[] dp = new int[nums.length];
-        Arrays.fill(dp, 1);
-        int ans = 1;
-        for (int i = 1; i < nums.length; i++) {
-            for (int j = 0; j < i; j++) {
-                if (nums[i] > nums[j]) dp[i] = Math.max(dp[i], dp[j] + 1);
-            }
-            ans = Math.max(ans, dp[i]);
 
-
-        }
-        return ans;
-    }
-
-    //    300. 最长递增子序列  二分查找+动态规划   时间复杂度O(NlgN)
+    // 300. 最长递增子序列  二分查找+动态规划   时间复杂度O(NlgN)
     public int lengthOfLIS2(int[] nums) {
         int[] tails = new int[nums.length]; //表示长度为i+1的子序列尾部最小值,例如tails[199] = 299,当严格递增序列长度为199时,尾部最小值为299
         int res = 0;
