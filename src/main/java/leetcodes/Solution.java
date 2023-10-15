@@ -49,35 +49,21 @@ public class Solution {
         BigDecimal valueOf = BigDecimal.valueOf(4.44);
         BigDecimal bigDecimal2 = new BigDecimal(999999999999L);
         BigDecimal valueOf2 = BigDecimal.valueOf(999999999999L);
-        System.err.println("bigDecimal="+bigDecimal);
-        System.err.println("decimal="+decimal);
-        System.err.println("valueOf="+valueOf);
-        System.err.println("bigDecimal2="+bigDecimal2);
-        System.err.println("valueOf2="+valueOf2);
-       double double_param=2e2;
+        System.err.println("bigDecimal=" + bigDecimal);
+        System.err.println("decimal=" + decimal);
+        System.err.println("valueOf=" + valueOf);
+        System.err.println("bigDecimal2=" + bigDecimal2);
+        System.err.println("valueOf2=" + valueOf2);
+        double double_param = 2e2;
         System.out.println(double_param);
-       HashMap<Integer,Integer> hashMap_param= new HashMap();
-        hashMap_param.put(null,3);
-        hashMap_param.put(null,4);
+        HashMap<Integer, Integer> hashMap_param = new HashMap();
+        hashMap_param.put(null, 3);
+        hashMap_param.put(null, 4);
 
     }
 
     //动态规划章节：
-    //300. 最长递增子序列  动态规划时间复杂度O(N^2)
-    public int lengthOfLIS(int[] nums) {
-        int[] dp = new int[nums.length];
-        Arrays.fill(dp, 1);
-        int ans = 1;
-        for (int i = 1; i < nums.length; i++) {
-            for (int j = 0; j < i; j++) {
-                if (nums[i] > nums[j]) dp[i] = Math.max(dp[i], dp[j] + 1);
-            }
-            ans = Math.max(ans, dp[i]);
 
-
-        }
-        return ans;
-    }
 
     //674. 最长连续递增序列
     public int findLengthOfLCIS(int[] nums) {
@@ -108,21 +94,6 @@ public class Solution {
         return ans;
     }
 
-    //1143.最长公共子序列 经典LCS
-    public int longestCommonSubsequence(String text1, String text2) {
-        int len1 = text1.length();
-        int len2 = text2.length();
-        int[][] dp = new int[len1 + 1][len2 + 1];
-        for (int i = 1; i <= len1; i++) {
-            for (int j = 1; j <= len2; j++) {
-                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
-                    dp[i][j] = 1 + dp[i - 1][j - 1];
-                } else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-            }
-
-        }
-        return dp[len1][len2];
-    }
 
     //1035.不相交的线
     public int maxUncrossedLines(int[] nums1, int[] nums2) {
@@ -285,7 +256,7 @@ public class Solution {
         return memo[index1][index2];
     }
 
-    // 647. 回文子串（给定一个字符串，你的任务是计算这个字符串中有多少个回文子串）
+    // 647. 回文子串  -  返回个数，动态规划
     public int countSubstrings(String s) {
         int len = s.length();
         int res = 0;
@@ -305,7 +276,28 @@ public class Solution {
 
     }
 
-    //516.最长回文子序列（）
+    // 647. 回文子串  -  返回个数，中心扩散
+    public int countSubstrings2(String s) {
+        int ans = 0;
+        for (int i = 0; i < s.length(); i++) {
+            ans += extend(s, i, i, s.length());
+            ans += extend(s, i, i + 1, s.length());
+        }
+        return ans;
+    }
+
+    private int extend(String s, int L, int R, int n) {
+        if (L >= s.length()) return 0;
+        int ans = 0;
+        while (L >= 0 && R < n && s.charAt(L) == s.charAt(R)) {
+            L--;
+            R++;
+            ans++;
+        }
+        return ans;
+    }
+
+    //516.最长回文子序列
     public int longestPalindromeSubseq(String s) {
         int len = s.length();
         int maxLen = 1;
@@ -831,34 +823,6 @@ public class Solution {
 
     }
 
-    // 5.最长回文子串
-    public String longestPalindrome(String s) {
-        int len = s.length();
-        boolean dp[][] = new boolean[len][len];
-        for (int i = 0; i < len; i++)
-            dp[i][i] = true;
-        int maxLen = 1;
-        int l = 0;
-        char arr[] = s.toCharArray();
-        for (int step = 2; step <= len; step++) {
-            for (int L = 0; L < len; L++) {
-                int R = L + step - 1;
-                if (R >= len) break;
-                if (arr[L] != arr[R]) dp[L][R] = false;
-                else {//arr[L] == arr[R]
-                    if (R == L + 1 || R == L + 2) dp[L][R] = true;
-                    dp[L][R] = dp[L + 1][R - 1];
-                }
-
-                if (dp[L][R] && step > maxLen) {
-                    maxLen = step;
-                    l = L;
-                }
-            }
-        }
-        return s.substring(l, l + maxLen);
-    }
-
 
     //11. 盛最多水的容器
     public int maxArea(int[] height) {
@@ -1070,32 +1034,6 @@ public class Solution {
 
     }
 
-    // 31. 下一个排列
-    public void nextPermutation(int[] nums) {
-        int len = nums.length;
-        int right = 0, left = 0;
-        for (right = len - 1; right >= 1; right--) {
-            if (nums[right - 1] < nums[right]) {
-                left = right - 1;
-                // 在 [right,len-1]中找到一个比 nums[left] 大的数,进行交换
-                for (int i = len - 1; i >= right; i--) {
-                    if (nums[i] > nums[left]) {
-                        int temp = nums[i];
-                        nums[i] = nums[left];
-                        nums[left] = temp;
-                        break;
-                    }
-                }
-                // 将后面部分排序
-                Arrays.sort(nums, right, len);
-                break;
-            }
-
-        }
-
-        // 特殊情况: 数组原本是逆序排列,那么下一个序列应该为正序的数组
-        if (right == 0) Arrays.sort(nums);
-    }
 
     // 32. 最长有效括号 方法一 : 常规解法
     public int longestValidParentheses1(String s) {
@@ -1129,26 +1067,6 @@ public class Solution {
         return maxLen;
     }
 
-    // 32. 最长有效括号 方法二 : 动态规划
-    public int longestValidParentheses2(String s) {
-        //dp[i] 表示 [0,i]区间里以第i个字符为结尾的有效括号数量
-        int dp[] = new int[s.length()];
-        Arrays.fill(dp, 0);
-
-        char[] chars = s.toCharArray();
-
-        int maxLen = 0;
-        //i从第2个开始,因为有效括号必须为偶数
-        for (int R = 1; R < chars.length; R++) {
-            if (chars[R] == ')') {
-                int L = R - dp[R - 1] - 1;
-                if (L >= 0 && chars[L] == '(') dp[R] = 2 + ((L - 1 >= 0) ? dp[L - 1] : 0) + dp[R - 1];
-
-            }
-            maxLen = Math.max(maxLen, dp[R]);
-        }
-        return maxLen;
-    }
 
     // 33. 在旋转排序数组中搜索
     public int search(int[] nums, int target) {
@@ -1439,80 +1357,9 @@ public class Solution {
 
     }
 
-    //62. 不同路径
-    public int uniquePaths(int m, int n) {
-        int[][] dp = new int[m][n];
-
-        for (int i = 0; i < n; i++)
-            dp[0][i] = 1;
-        for (int j = 0; j < m; j++)
-            dp[j][0] = 1;
-
-        for (int i = 1; i < m; i++) {
-            for (int j = 1; j < n; j++) {
-                dp[i][j] += (dp[i][j - 1] + dp[i - 1][j]);
-            }
-        }
-
-        return dp[m - 1][n - 1];
-    }
-
-    //64. 最小路径和
-    public int minPathSum(int[][] grid) {
-        int colLen = grid.length;
-        int rowLen = grid[0].length;
-
-        int[][] dp = new int[colLen][rowLen];
-        dp[0][0] = grid[0][0];
-        for (int i = 1; i < colLen; i++)
-            dp[0][i] = grid[0][i] + dp[0][i - 1];
-        for (int i = 1; i < rowLen; i++)
-            dp[i][0] = grid[i][0] + dp[i - 1][0];
-
-        for (int i = 1; i < rowLen; i++)
-            for (int j = 1; j < colLen; j++) {
-                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
-            }
-
-        return dp[rowLen - 1][colLen - 1];
-
-    }
-
-    // 70. 爬楼梯
-    public int climbStairs(int n) {
-
-        int dp[] = new int[n + 1];
-        dp[1] = 1;
-        dp[0] = 1;
-        for (int i = 2; i <= n; i++) {
-            dp[i] = dp[i - 1] + dp[i - 2];
-        }
-        return dp[n];
-
-    }
 
 
-    //75. 颜色分类 (荷兰国旗问题)
-    public void sortColors(int[] nums) {
-        //[0,L]为 0
-        int L = -1;
-        //[R,nums.length-1] 都为2
-        int R = nums.length;
-//       (L,R)都为1
-        for (int i = 0; i < R; ) {
-            if (nums[i] == 0) {
-                swap(nums, i, ++L);
-                i++;
-            } else if (nums[i] == 2) {
-                swap(nums, --R, i);
-            } else i++;
 
-        }
-        for (int num : nums) {
-            System.out.println(num);
-        }
-
-    }
 
     private void swap(int[] nums, int a, int b) {
         int temp = nums[a];
@@ -1836,15 +1683,6 @@ public class Solution {
         return max;
     }
 
-    // 136. 只出现一次的数字
-    public int singleNumber(int[] nums) {
-        int e = 0;
-        for (int num : nums) {
-            e ^= num;
-        }
-        return e;
-
-    }
 
     // 139. 单词拆分  动态规划
     public boolean wordBreak(String s, List<String> wordDict) {
@@ -1954,24 +1792,7 @@ public class Solution {
 
     }
 
-    // 152 乘积最大的数组
-    public int maxProduct(int[] nums) {
-        int max = 1;
-        int min = 1;
-        int ans = Integer.MIN_VALUE;
-        for (int num : nums) {
-            if (num < 0) {
-                min = min ^ max;
-                max = min ^ max;
-                min = min ^ max;
-            }
-            max = Math.max(num, num * max);
-            min = Math.min(num, num * min);
-            ans = Math.max(max, ans);
-        }
-        return ans;
 
-    }
 
     //155. 最小栈
     class MinStack {
@@ -2016,21 +1837,6 @@ public class Solution {
 
     }
 
-    // 169. 多数元素
-    // 思想: 众数到最后一定比其它数多,每次遍历记录某一个数X的出现次数,遇到不相同的就-1,直到0,更换其它众数Y
-    public int majorityElement(int[] nums) {
-        int ans = nums[0];
-        int count = 1;
-        for (int num : nums) {
-            if (num == ans) {
-                count++;
-            } else if (count == 0) {
-                ans = num;
-                count = 1;
-            } else count--;
-        }
-        return ans;
-    }
 
     // 198. 打家劫舍  空间复杂度O(n),时间复杂度O(n)
     public int rob(int[] nums) {
@@ -2048,18 +1854,6 @@ public class Solution {
         return dp[len];
     }
 
-    // 198. 打家劫舍 法二 空间复杂度O(1),时间复杂度O(n)
-    public int rob2(int[] nums) {
-        int pre_2 = 0;
-        int pre_1 = 0;
-        for (int num : nums) {
-            int temp = Math.max(num + pre_2, pre_1);
-            pre_2 = pre_1;
-            pre_1 = temp;
-
-        }
-        return pre_1;
-    }
 
     //827 最大人工岛
     public int largestIsland(int[][] grid) {
@@ -2582,18 +2376,7 @@ public class Solution {
         return false;
     }
 
-    // 279. 完全平方数
-    public int numSquares(int n) {
-        int[] dp = new int[n + 1];
-        for (int i = 1; i <= n; i++) {
-            dp[i] = i;
-            for (int j = 1; j * j <= i; j++) {
-                dp[i] = Math.min(dp[i - j * j] + 1, dp[i]);
-            }
 
-        }
-        return dp[n];
-    }
 
     //283. 移动零
     public void moveZeroes(int[] nums) {
@@ -2609,22 +2392,6 @@ public class Solution {
             }
 
         }
-    }
-
-    //287. 寻找重复数
-    public int findDuplicate(int[] nums) {
-        int slow = 0;
-        int fast = 0;
-        do {
-            slow = nums[0];
-            fast = nums[nums[fast]];
-        } while (slow != fast);
-        slow = 0;
-        while (slow != fast) {
-            slow = nums[slow];
-            fast = nums[fast];
-        }
-        return slow;
     }
 
 
@@ -2717,23 +2484,7 @@ public class Solution {
     }
 
 
-    // 300. 最长递增子序列  二分查找+动态规划   时间复杂度O(NlgN)
-    public int lengthOfLIS2(int[] nums) {
-        int[] tails = new int[nums.length]; //表示长度为i+1的子序列尾部最小值,例如tails[199] = 299,当严格递增序列长度为199时,尾部最小值为299
-        int res = 0;
-        for (int cur : nums) {
-            int i = 0, j = res;
-            //确定当前数 的位置,如果它比tail[res-1]还大,那么就更新tail[res-1]的值
-            while (i < j) {
-                int m = (i + j) / 2;
-                if (tails[m] < cur) i = m + 1;
-                else j = m;
-            }
-            tails[i] = cur;
-            if (res == i) res++;
-        }
-        return res;
-    }
+
 
     // 301. 删除无效的括号
     List<String> res = new ArrayList<>();
@@ -2857,25 +2608,7 @@ public class Solution {
         return dp[0][len + 1];
     }
 
-    //    322. 零钱兑换
-    public int coinChange(int[] coins, int amount) {
 
-        int[] dp = new int[amount + 1];
-
-        Arrays.fill(dp, amount + 1);
-
-
-        dp[0] = 0;
-
-        for (int i = 1; i <= amount; i++) {
-            for (int j = 0; j < coins.length; j++) {
-                if (coins[j] <= i) {
-                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
-                }
-            }
-        }
-        return dp[amount] > amount ? -1 : dp[amount];
-    }
 
     // 338. 比特位计数
     public int[] countBits(int n) {
@@ -3096,51 +2829,14 @@ public class Solution {
         return ans.toArray(new int[ans.size()][]);
     }
 
-    //416. 分割等和子集
-    public boolean canPartition(int[] nums) {
-        int len = nums.length;
-        if (len < 2) return false;
-
-        int sum = 0, maxNum = 0;
-        for (int num : nums) {
-            sum += num;
-            maxNum = Math.max(maxNum, num);
-
-        }
-        if (sum % 2 != 0) {
-            return false;
-        }
-        int target = sum / 2;
-        if (maxNum > target) {
-            return false;
-        }
-
-        boolean[] dp = new boolean[target + 1];
-        dp[0] = true;
-        for (int i = 0; i < len; i++) {
-            int num = nums[i];
-            for (int j = target; j >= num; --j) {
-                dp[j] |= dp[j - num];
-            }
-        }
-
-
-        return dp[target];
-    }
 
     // 698. 分为k个相等的子集 方法一：球选桶 时间复杂度：O(k^n)
-
+    //todo
     boolean[] used;
-
     public boolean canPartitionKSubsets(int[] nums, int k) {
         Arrays.sort(nums);
         used = new boolean[nums.length];
         int sum = Arrays.stream(nums).sum();
-
-        /*for (int i = 0; i < nums.length / 2; i++) {
-            swap(nums, i, nums.length - 1 - i);
-        }*/
-
         if (sum % k != 0) {
             return false;
         }
