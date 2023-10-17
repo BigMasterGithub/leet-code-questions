@@ -2830,7 +2830,7 @@ public class Solution {
     }
 
 
-    // 698. 分为k个相等的子集 方法一：球选桶 时间复杂度：O(k^n)
+    // 698. 分为k个相等的子集 方法一：桶选球，复杂度O（2^n）^k
     //todo
     boolean[] used;
     public boolean canPartitionKSubsets(int[] nums, int k) {

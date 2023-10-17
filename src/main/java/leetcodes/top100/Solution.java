@@ -27,8 +27,59 @@ public class Solution {
 //        solution.wordBreak("leetcode", Arrays.asList("leet", "co", "ode", "de"));
 //        solution.coinChange(new int[]{1,2,5},11);
 //        solution.numSquares(12);
-        solution.rob(new int[]{2, 7, 9, -3, 1, 12});
+//        solution.rob(new int[]{2, 7, 9, -3, 1, 12});
+//        solution.climbStairs(2);
+        System.out.println(solution.canPartitionKSubsets(new int[]{1, 5, 2, 9, 5, 3, 8}, 3));
     }
+
+
+    //额外题目!!!!
+    // 698. 分为k个相等的子集 方法一：桶选球，复杂度O（2^n）^k
+    //todo
+    boolean[] used;
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        Arrays.sort(nums);
+        used = new boolean[nums.length];
+        int sum = Arrays.stream(nums).sum();
+        if (sum % k != 0) {
+            return false;
+        }
+        int target = sum / k;
+        System.out.println(target);
+        if (nums[nums.length - 1] > target) return false;
+        return fun2(nums, k, target, 0, nums.length - 1);
+
+    }
+
+
+    private boolean fun2(int[] nums, int k, int target, int temp, int index) {
+
+        if (k == 1) {
+
+            return true;
+        }
+        if (temp == target) {
+            return fun2(nums, k - 1, target, 0, nums.length - 1);
+
+        }
+
+
+        for (int i = index; i >= 0; i--) {
+            if (used[i] || nums[i] + temp > target) continue;
+            used[i] = true;
+            System.out.println("选择"+nums[i]);
+            if (fun2(nums, k, target, temp + nums[i], index - 1)) {
+
+                return true;
+            }
+            used[i] = false;
+            while (i > 0 && nums[i] == nums[i - 1]) i--;
+        }
+        return false;
+
+    }
+
+
 
     // 70. 爬楼梯
     public int climbStairs(int n) {
@@ -39,6 +90,7 @@ public class Solution {
         for (int i = 2; i <= n; i++) {
             dp[i] = dp[i - 1] + dp[i - 2];
         }
+
         return dp[n];
 
     }
