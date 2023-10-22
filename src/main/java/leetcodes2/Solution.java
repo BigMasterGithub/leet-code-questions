@@ -1,5 +1,6 @@
 package leetcodes2;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -11,8 +12,49 @@ import java.util.LinkedList;
 public class Solution {
     public static void main(String[] args) {
         Solution solution = new Solution();
-        boolean ans = solution.patternMatching("bbb","xxxxxx");
-        System.out.println(ans);
+        /*boolean ans = solution.patternMatching("bbb","xxxxxx");
+        System.out.println(ans);*/
+        String multiply = solution.multiply("123", "9898");
+
+    }
+
+
+    //
+    public String multiply(String num1, String num2) {
+        int[] tempResult = new int[num1.length() + num2.length()];
+
+        // 相乘
+        for (int i = num1.length()-1; i >=0 ; i--) {
+            System.out.println( "第"+i+"轮：===");
+            for (int j = num2.length()-1; j >=0 ; j--) {
+                tempResult[i+j+1] += (num1.charAt(i) - '0') * (num2.charAt(j)-'0');
+                System.out.println(Arrays.toString(tempResult));
+            }
+        }
+        System.out.println(Arrays.toString(tempResult));
+        // 处理进位问题,从个位向前进位,最前面一位不可能有进位
+        for (int i = tempResult.length-1; i>0 ; i--) {
+            // 大于9，需要进位
+            if (tempResult[i] > 9){
+                tempResult[i-1] += tempResult[i] / 10;
+                tempResult[i] %= 10;
+            }
+        }
+        System.out.println(Arrays.toString(tempResult));
+
+        // 处理第一个0
+        StringBuilder stringResult = new StringBuilder();
+        // flag表示还未找到第一个非0
+        boolean flag = false;
+        for (int i = 0; i < tempResult.length; i++) {
+            if (tempResult[i] == 0 && !flag){
+                continue;
+            } else {
+                stringResult.append(tempResult[i]);
+                flag = true;
+            }
+        }
+        return stringResult.toString();
 
     }
     //面试题16.18 模式匹配

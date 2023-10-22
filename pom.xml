@@ -9,7 +9,11 @@
     <url>http://maven.apache.org</url>
 
     <dependencies>
-
+        <dependency>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-java</artifactId>
+            <version>0.16.0</version>
+        </dependency>
         <!--    hutool  工具包 -->
         <dependency>
             <groupId>cn.hutool</groupId>

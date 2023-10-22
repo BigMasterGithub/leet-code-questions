@@ -256,7 +256,7 @@ public class Solution {
         return memo[index1][index2];
     }
 
-    // 647. 回文子串  -  返回个数，动态规划
+    // 647. 回文子串  -  返回字符串中回文子串的个数，动态规划
     public int countSubstrings(String s) {
         int len = s.length();
         int res = 0;
@@ -276,7 +276,7 @@ public class Solution {
 
     }
 
-    // 647. 回文子串  -  返回个数，中心扩散
+    // 647. 回文子串  -  返回字符串中回文子串的个数，动态规划
     public int countSubstrings2(String s) {
         int ans = 0;
         for (int i = 0; i < s.length(); i++) {
@@ -461,6 +461,28 @@ public class Solution {
         return true;
     }
 
+    //125.验证回文串
+    public boolean isPalindrome(String s) {
+        int n = s.length();
+        int left = 0, right = n - 1;
+        while (left < right) {
+            while (left < right && !Character.isLetterOrDigit(s.charAt(left))) {
+                ++left;
+            }
+            while (left < right && !Character.isLetterOrDigit(s.charAt(right))) {
+                --right;
+            }
+            if (left < right) {
+                if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {
+                    return false;
+                }
+                ++left;
+                --right;
+            }
+        }
+        return true;
+    }
+
     //131.分割回文串、
     boolean[][] dp;
     List<List<String>> ans_131 = new ArrayList<>();
@@ -506,22 +528,6 @@ public class Solution {
         return Arrays.stream(nums).sum();
     }
 
-
-    //739 每日温度
-    public int[] dailyTemperatures(int[] temperatures) {
-//       1.栈顶最小，栈底最大
-        LinkedList<Integer> stack = new LinkedList<>();//
-        stack.push(0);
-        int[] ans = new int[temperatures.length];
-        for (int i = 1; i < temperatures.length; i++) {
-            while (stack.isEmpty() == false && temperatures[i] > temperatures[stack.peek()]) {
-                ans[stack.peek()] = i - stack.peek();
-                stack.pop();
-            }
-            stack.push(i);
-        }
-        return ans;
-    }
 
     //496.下一个更大的元素
     public int[] nextGreaterElement(int[] nums1, int[] nums2) {
@@ -593,32 +599,6 @@ public class Solution {
 
     }
 
-    //84.柱状图中最大的矩形
-    public int largestRectangleArea(int[] heights) {
-        int ans = heights[0];
-        //栈顶最大，栈底最小
-        LinkedList<Integer> max_min_stack = new LinkedList<>();
-        int[] heights_new = new int[heights.length + 2];
-        for (int i = 0; i < heights.length; i++) {
-            heights_new[1 + i] = heights[i];
-
-        }
-        heights_new[0] = 0;
-        heights_new[heights.length + 1] = 0;
-        max_min_stack.push(0);
-        for (int i = 1; i < heights_new.length; i++) {
-            while (!max_min_stack.isEmpty() && heights_new[i] < heights_new[max_min_stack.peek()]) {
-                int curHeight = heights_new[max_min_stack.peek()];
-                int weight = i - max_min_stack.peek();
-                ans = Math.max(ans, curHeight * weight);
-                max_min_stack.pop();
-            }
-            max_min_stack.push(i);
-        }
-
-
-        return ans;
-    }
 
     //232
     class MyQueue {
@@ -941,23 +921,6 @@ public class Solution {
         return head;
     }
 
-    // 20. 有效的括号
-    public boolean isValid(String s) {
-        char[] arr = s.toCharArray();
-        Stack<Character> stack = new Stack<>();
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == '(') stack.push(')');
-            else if (arr[i] == '[') stack.push(']');
-            else if (arr[i] == '{') stack.push('}');
-            else {
-                if (stack.isEmpty() || stack.peek() != arr[i]) {
-                    return false;
-                }
-                stack.pop();
-            }
-        }
-        return stack.isEmpty();
-    }
 
     // 21. 合并两个有序链表
     public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
@@ -1032,39 +995,6 @@ public class Solution {
         return ans.next;
 //        Thread a = new Thread()
 
-    }
-
-
-    // 32. 最长有效括号 方法一 : 常规解法
-    public int longestValidParentheses1(String s) {
-        int leftSum = 0;
-        int rightSum = 0;
-        int maxLen = 0;
-        char[] arr = s.toCharArray();
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == '(') leftSum++;
-            else rightSum++;
-            if (leftSum == rightSum) {
-                maxLen = Math.max(maxLen, leftSum + rightSum);
-            }
-            if (rightSum > leftSum) {
-                leftSum = 0;
-                rightSum = 0;
-            }
-        }
-        leftSum = rightSum = 0;
-        for (int i = arr.length - 1; i >= 0; i--) {
-            if (arr[i] == '(') leftSum++;
-            else rightSum++;
-            if (leftSum == rightSum) {
-                maxLen = Math.max(maxLen, leftSum + rightSum);
-            }
-            if (rightSum < leftSum) {
-                leftSum = 0;
-                rightSum = 0;
-            }
-        }
-        return maxLen;
     }
 
 
@@ -1317,25 +1247,6 @@ public class Solution {
     }
 
 
-    // 55. 跳跃游戏
-    public boolean canJump(int[] nums) {
-        int len = nums.length;
-        if (len == 0 || len == 1) return true;
-        //记录当前小人能走的最大位置的下标，初始为nums[0]
-        int maxIndex = nums[0];
-        for (int i = 1; i < len; i++) {
-            if (maxIndex >= len - 1) return true;
-            // 小人无法到达i处
-            if (i > maxIndex) return false;
-            // 小人可以到达i处，并且在i处向前走的距离更远了，更新maxIndex
-            if (i + nums[i] > maxIndex) {
-                maxIndex = i + nums[i];
-            }
-        }
-
-        return false;
-    }
-
     // 56. 合并区间
     public int[][] merge(int[][] intervals) {
         int rowLen = intervals.length;
@@ -1356,9 +1267,6 @@ public class Solution {
         return Arrays.copyOf(ans, index + 1);
 
     }
-
-
-
 
 
     private void swap(int[] nums, int a, int b) {
@@ -1793,38 +1701,6 @@ public class Solution {
     }
 
 
-
-    //155. 最小栈
-    class MinStack {
-        Stack<Integer> dataStack;
-        Stack<Integer> minStack;
-
-        public MinStack() {
-            dataStack = new Stack();
-            minStack = new Stack();
-        }
-
-        public void push(int val) {
-            dataStack.push(val);
-            if (minStack.isEmpty()) {
-                minStack.push(val);
-            } else minStack.push(Math.min(minStack.peek(), val));
-        }
-
-        public void pop() {
-            dataStack.pop();
-            minStack.pop();
-        }
-
-        public int top() {
-            return dataStack.peek();
-        }
-
-        public int getMin() {
-            return minStack.peek();
-        }
-    }
-
     // 160. 相交链表
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
         if (headA == null || headB == null) return null;
@@ -1952,39 +1828,8 @@ public class Solution {
         return ans;
     }
 
-    // 200. 岛屿数量 DFS 时间复杂度：O(MN)，空间复杂度：O(MN)
-    //dfs解法
-    public int numIslands(char[][] grid) {
-        int rowLen = grid.length;
-        int cowLen = grid[0].length;
-        int answer = 0;
-        for (int i = 0; i < rowLen; i++) {
-            for (int j = 0; j < cowLen; j++) {
-                if (grid[i][j] == '1') answer++;
-                dfs(grid, i, j);
-            }
-        }
-        return answer;
-    }
-
-    private void dfs(char[][] grid, int i, int j) {
-        int rowLen = grid.length;
-        int cowLen = grid[0].length;
-        if (i < 0 || j < 0 || i >= rowLen || j >= cowLen || grid[i][j] == '0') {
-            return;
-        }
-        if (grid[i][j] == '2') return;
 
 
-        grid[i][j] = '2';
-
-        //向四个方向扩散
-        dfs(grid, i - 1, j);
-        dfs(grid, i + 1, j);
-        dfs(grid, i, j - 1);
-        dfs(grid, i, j + 1);
-
-    }
 
     //206. 反转链表
     public ListNode reverseList(ListNode head) {
@@ -2268,6 +2113,8 @@ public class Solution {
         }
     }
 
+
+
     //225. 用一个队列实现栈
     class MyStack2 {
         Queue<Integer> queue;
@@ -2377,7 +2224,6 @@ public class Solution {
     }
 
 
-
     //283. 移动零
     public void moveZeroes(int[] nums) {
         int len = nums.length;
@@ -2484,8 +2330,6 @@ public class Solution {
     }
 
 
-
-
     // 301. 删除无效的括号
     List<String> res = new ArrayList<>();
 
@@ -2529,7 +2373,22 @@ public class Solution {
 
         }
     }
-
+    public boolean isValid(String s) {
+        char[] arr = s.toCharArray();
+        Stack<Character> stack = new  Stack<>();
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == '(') stack.push(')');
+            else if (arr[i] == '[') stack.push(']');
+            else if (arr[i] == '{') stack.push('}');
+            else {
+                if (stack.isEmpty() || stack.peek() != arr[i]) {
+                    return false;
+                }
+                stack.pop();
+            }
+        }
+        return stack.isEmpty();
+    }
     // 309. 最佳买卖股票时机含冷冻期
     public int maxProfit2(int[] prices) {
         int len = prices.length;
@@ -2609,7 +2468,6 @@ public class Solution {
     }
 
 
-
     // 338. 比特位计数
     public int[] countBits(int n) {
         int[] ans = new int[n + 1];
@@ -2653,62 +2511,6 @@ public class Solution {
         return new Info2(noMax, yesMax);
     }
 
-    // 347. 前 K 个高频元素
-    public int[] topKFrequent(int[] nums, int k) {
-        Map<Integer, Integer> num_count = new HashMap<Integer, Integer>();
-        for (int num : nums) {
-            num_count.put(num, num_count.getOrDefault(num, 0) + 1);
-        }
-        Queue<int[]> queue = new PriorityQueue<>((int[] a, int[] b) -> a[1] - b[1]);
-        // 注意map的遍历方法,性能高
-        for (Map.Entry<Integer, Integer> cur : num_count.entrySet()) {
-            int num = cur.getKey();
-            int count = cur.getValue();
-            if (queue.size() == k) {
-                if (queue.peek()[1] < count) {
-                    queue.poll();
-                    queue.offer(new int[]{num, count});
-                } else {
-                    queue.offer(new int[]{num, count});
-                }
-            }
-        }
-        int[] ans = new int[k];
-        for (int i = 0; i < k; i++) {
-            ans[i] = queue.poll()[0];
-        }
-        return ans;
-    }
-
-    //394. 字符串解码
-    public String decodeString(String s) {
-
-        StringBuilder ans = new StringBuilder();
-        int num = 0;
-        LinkedList<Integer> stack_num = new LinkedList<>();
-        LinkedList<String> stack_res = new LinkedList<>();
-        for (Character c : s.toCharArray()) {
-            if (c == '[') {
-                stack_num.push(num);
-                stack_res.push(ans.toString());
-                num = 0;
-                ans = new StringBuilder();
-            } else if (c == ']') {
-                StringBuilder temp = new StringBuilder();
-                int curNum = stack_num.pop();
-                for (int i = 0; i < curNum; i++) {
-                    temp.append(ans);
-
-                }
-                ans = new StringBuilder(stack_res.pop() + temp);
-            } else if (c >= '0' && c <= '9') num = num * 10 + Integer.parseInt(c + "");
-            else ans.append(c);
-
-        }
-        return ans.toString();
-
-
-    }
 
     // 399. 除法求值
     public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
@@ -2833,6 +2635,7 @@ public class Solution {
     // 698. 分为k个相等的子集 方法一：桶选球，复杂度O（2^n）^k
     //todo
     boolean[] used;
+
     public boolean canPartitionKSubsets(int[] nums, int k) {
         Arrays.sort(nums);
         used = new boolean[nums.length];
