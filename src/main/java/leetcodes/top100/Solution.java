@@ -1,6 +1,10 @@
 package leetcodes.top100;
 
+import com.kitfox.svg.A;
+import data.structure.TreeNode;
+
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author 张壮
@@ -9,10 +13,9 @@ import java.util.*;
  **/
 public class Solution {
     int[][] direct = new int[][]{{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
-    boolean[][] vis ;
+    boolean[][] vis;
+
     public static void main(String[] args) {
-
-
         Solution solution = new Solution();
 //        solution.nextPermutation(new int[]{1, 3, 4, 5});
 //        solution.majorityElement(new int[]{7, 7, 5, 7, 5, 1, 5, 7, 5, 5, 7, 7, 7, 7, 7, 7});\
@@ -51,11 +54,839 @@ public class Solution {
 //        solution.maxProfit_121(new int[]{2, 3, 8, 4, 7, 6, 43, 9, 1});
 //        solution.topKFrequent(new int[]{1, 1, 1, 2, 2, 3}, 2);
 //        solution.decodeString("3[a2[c]]");
-        solution.orangesRotting(new int[][]{{0}});
+//        solution.orangesRotting(new int[][]{{0}});
+//        solution.searchRange(new int[]{2, 2, 3}, 4);
+//        solution.generateParenthesis(3);
+        solution.minWindow2("a","a");
+    }
+
+    //哈希
+    //1.两数之和
+    public int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i=0;i<nums.length;i++){
+            if(map.containsKey(target-nums[i])){
+                return new int[]{i,map.get(target-nums[i])};
+            }
+            else{
+                map.put(nums[i],i);
+            }
+        }
+        return new int[]{-1,-1};
+    }
+    //49.字母异位词分组
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (String str : strs) {
+            char[] array = str.toCharArray();
+            Arrays.sort(array);
+            String key = new String(array);
+            List<String> list = map.getOrDefault(key, new ArrayList<String>());
+            list.add(str);
+            map.put(key, list);
+        }
+        return new ArrayList<List<String>>(map.values());
+    }
+
+    // 128. 最长连续序列
+    public int longestConsecutinve(int[] nums) {
+        Set<Integer> num_set = new HashSet<>();
+        for (int num : nums) {
+            num_set.add(num);
+        }
+        int max = 1;
+        for (int num : nums) {
+            if (num_set.contains(num - 1)) continue;
+            int temp = num;
+            int len = 1;
+            while (num_set.contains(temp + 1)) {
+                temp++;
+                len++;
+            }
+            max = Math.max(len, max);
+        }
+        return max;
+
+    }
+    //双指针
+    //283. 移动零
+    public void moveZeroes(int[] nums) {
+        int len = nums.length;
+        int j = 0;
+        //[0,j]都是不等于0的
+        for (int i = 0; i < len; i++) {
+            if (nums[i] != 0) {
+                int temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+                j++;
+            }
+
+        }
+    }
+
+    //11. 盛最多水的容器
+    public int maxArea(int[] height) {
+        int L = 0;
+        int R = height.length - 1;
+        int ans = 0;
+        int temp = 0;
+        while (L < R) {
+            if (height[L] < height[R]) {
+                temp = (R - L) * height[L];
+                L++;
+            } else { //height[L] 大于或等于 height[R]
+                temp = (R - L) * height[R];
+                R--;
+            }
+            ans = Math.max(ans, temp);
+        }
+        return ans;
+    }
+
+    // 15. 三数之和
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+
+        int length = nums.length;
+        Arrays.sort(nums);
+        if (nums[0] > 0) return ans;
+        for (int one = 0; one < length; one++) {
+            if (one > 0 && nums[one] == nums[one - 1]) continue;
+            int temp = -nums[one];
+            int three = length - 1;
+            for (int two = one + 1; two < length; two++) {
+                if (two > one + 1 && nums[two] == nums[two - 1]) continue;
+
+                while (two < three && nums[two] + nums[three] > temp) three--;
+                if (two == three) break;
+                if (nums[two] + nums[three] == temp) ans.add(Arrays.asList(nums[one], nums[two], nums[three]));
+            }
+        }
+
+
+        return ans;
+    }
+    //42. 接雨水
+    public int trap(int[] height) {
+        int len = height.length;
+        int leftMax[] = new int[len];
+        leftMax[0] = height[0];
+        int rightMax[] = new int[len];
+        rightMax[len - 1] = height[len - 1];
+        //[0,i] 最大的值
+        for (int i = 1; i < len; i++) {
+            leftMax[i] = Math.max(height[i], leftMax[i - 1]);
+        }
+        //[i,len-1]最大值
+        for (int i = len - 2; i >= 0; i--) {
+            rightMax[i] = Math.max(height[i], rightMax[i + 1]);
+        }
+
+        int ans = 0;
+        for (int i = 0; i < len; i++) {
+            ans += (Math.min(leftMax[i], rightMax[i]) - height[i]) * 1;
+
+        }
+        return ans;
+
+
+    }
+    //滑动窗口系列
+    //438 滑动窗口
+    public List<Integer> findAnagrams(String s, String p) {
+        char[] s_chars = s.toCharArray();
+        char[] p_chars = p.toCharArray();
+        List<Integer> ans = new ArrayList<>();
+
+        if (s_chars.length < p_chars.length) return ans;
+
+        int[] s_count = new int[26];
+        int[] p_count = new int[26];
+
+        for (int i = 0; i < p_chars.length; i++) {
+            s_count[s_chars[i] - 'a']++;
+            p_count[p_chars[i] - 'a']++;
+        }
+
+        if (Arrays.equals(s_count, p_count)) {
+            ans.add(0);
+        }
+        for (int i = 0; i < s_chars.length - p_chars.length; i++) {
+            s_count[s_chars[i] - 'a']--;
+            s_count[s_chars[i + p_chars.length] - 'a']++;
+            if (Arrays.equals(s_count, p_count)) {
+                ans.add(i + 1);
+            }
+        }
+        return ans;
+    }
+
+    // 3 无重复字符的最长子串
+    public int lengthOfLongestSubstring(String s) {
+
+        if (s == null || s == "" || s.length() == 0) return 0;
+        int l = 0;
+        int r = 0;
+        int curMaxLength = 0;
+        // map 记录遍历时字符出现的最新位置.
+        Map<Character, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            r = i;
+            Character c = s.charAt(i);
+            if (map.containsKey(c)) {
+                // 一旦窗口中有重复的内容出现,就修改左边界l,将l置为 map中该字符的位置的下一位.
+                l = Math.max(l, map.get(c) + 1);
+
+            }
+            map.put(c, i);
+            curMaxLength = Math.max(curMaxLength, r - l + 1);
+        }
+        return curMaxLength;
     }
 
 
+
+    //子串系列
+    //560.和为K的子数组
+    public int subarraySum(int[] nums, int k) {
+        HashMap<Integer,Integer> preSumMap = new HashMap();
+        preSumMap.put(0,1);
+        int ans = 0 ;
+        int sum = 0;
+        for(int i =0 ;i <nums.length;i++){
+            sum +=nums[i];
+            if(preSumMap.containsKey(sum - k)){
+                ans+=preSumMap.get(sum-k);
+            }
+            preSumMap.put(sum,preSumMap.getOrDefault(sum,0) + 1);
+        }
+        return ans;
+    }
+    // 239. 滑动窗口最大值
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length < 2) return nums;
+        //（1）必须为双端队列，队列中元素为单调递减，队头元素 》 队尾元素
+        LinkedList<Integer> q = new LinkedList<>();
+        int len = nums.length;
+        int[] ans = new int[nums.length - k + 1];
+
+        for (int i = 0; i < len; i++) {
+            //保证队列中元素为单调递减，队头元素 》 队尾元素，将当前元素放到合适位置
+            while (!q.isEmpty() && nums[q.peekLast()] <= nums[i]) {
+                q.pollLast();
+
+            }
+
+            q.addLast(i);
+            //（3）保证队列中元素的下标范围在[i-k+1,i]内，
+            if (q.peekFirst() < i - k + 1) {
+                q.pollFirst();
+            }
+            //（4）i的值为k-1时，窗口已经形成。
+            if (i>= k-1) {
+                ans[i - k + 1] = nums[q.peekFirst()];
+            }
+        }
+        return ans;
+    }
+
+    //76.最小覆盖子串
+    public String minWindow2(String s, String t) {
+        String ansString = "";
+        //(1)123的原因：A-65,Z-90,a-97,z-122
+        int[] t_table = new int[123];
+        for (int i = 0; i < t.length(); i++) {
+            t_table[t.charAt(i)]++;
+        }
+
+        int l = 0, r = 0;
+        int count = t.length();
+        int ans = Integer.MAX_VALUE;
+        while (r < s.length()) {
+            if (t_table[s.charAt(r)] >= 1) count--;
+            t_table[s.charAt(r)]--;
+
+            //此时统计窗口中包含t的子串长度
+            if (count == 0) {
+                while (l < r && t_table[s.charAt(l)] < 0) {
+                    t_table[s.charAt(l)]++;
+                    l++;
+                }
+                if (ans > r - l + 1) {
+                    ans = r - l + 1;
+                    ansString = s.substring(l, l + ans);
+                }
+                t_table[s.charAt(l)]++;
+                l++;
+                count++;
+            }
+            r++;
+        }
+        return ansString;
+
+    }
+
+    //二叉树系列
+
+    //94.二叉树的中序遍历
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> ans = new ArrayList<>();
+        fun_94(root, ans);
+        return ans;
+    }
+
+    private void fun_94(TreeNode node, List<Integer> ans) {
+        if (node == null) return;
+        fun_94(node.left, ans);
+        ans.add(node.val);
+        fun_94(node.right, ans);
+    }
+
+    //104.二叉树的最大深度
+    public int maxDepth(TreeNode root) {
+        if (root == null) return 0;
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+        return left > right ? left + 1 : right + 1;
+    }
+
+    // 226. 翻转二叉树
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        TreeNode left = invertTree(root.left);
+        TreeNode right = invertTree(root.right);
+        root.left = right;
+        root.right = left;
+        return root;
+    }
+
+    // 101. 对称二叉树
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) return true;
+        return fun_101(root.left, root.right);
+    }
+
+    private boolean fun_101(TreeNode L, TreeNode R) {
+
+
+        if (L == null && R == null) return true;
+        if (L == null || R == null || L.val != R.val) return false;
+
+        return fun_101(L.left, R.right) && fun_101(L.right, R.left);
+
+    }
+
+    //543.二叉树的直径
+    int ans = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        fun(root);
+        return ans;
+    }
+
+    private int fun(TreeNode node) {
+        if (node == null) return 0;
+        int L = fun(node.left);
+        int R = fun(node.right);
+        ans = Math.max(ans, L + R);
+        return Math.max(L, R) + 1;
+    }
+
+    //108.将有序数组转换为二叉搜索树
+    public TreeNode sortedArrayToBST(int[] nums) {
+        TreeNode root = fun(nums, 0, nums.length - 1);
+        return root;
+    }
+
+    private TreeNode fun(int[] nums, int l, int r) {
+        if (l > r) return null;
+        int mid = (l + r) / 2;
+        TreeNode node = new TreeNode(nums[mid]);
+        node.left = fun(nums, 0, mid - 1);
+        node.right = fun(nums, mid + 1, r);
+        return node;
+    }
+
+    // 98. 验证二叉搜索树
+    long preValue = Long.MIN_VALUE;
+    public boolean flag = true;
+
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) return true;
+        fun_98(root);
+        return flag;
+
+
+    }
+
+    private void fun_98(TreeNode node) {
+
+        if (node != null) {
+            fun_98(node.left);
+
+            if (node.val <= preValue) {
+                flag = false;
+
+            }
+            preValue = node.val;
+            fun_98(node.right);
+        }
+    }
+
+    //230.二叉搜索树中第K小的元素 - 中序迭代
+
+    public int kthSmallest(TreeNode root, int k) {
+        LinkedList<TreeNode> stack = new LinkedList<TreeNode>();
+        int curNum = 0;
+        TreeNode cur = root;
+        while (cur != null || !stack.isEmpty()) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop();
+            curNum++;
+            if (curNum == k) {
+                return cur.val;
+            }
+            cur = cur.right;
+        }
+        return -1;
+    }
+
+    int num = 0;
+
+    //230.二叉搜索树中第K小的元素 - 中序递归
+    public int kthSmallest2(TreeNode root, int k) {
+        fun2(root, k);
+        return ans;
+    }
+
+    private void fun2(TreeNode node, int k) {
+        if (node == null) return;
+        fun2(node.left, k);
+        num++;
+        if (num == k) {
+            ans = node.val;
+        }
+        fun2(node.right, k);
+    }
+
+    //119.二叉树的右视图 - BFS
+    public List<Integer> rightSideView(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        List<Integer> ans = new ArrayList<>();
+        if (root == null) return ans;
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (i == 0) {
+                    ans.add(poll.val);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+            }
+
+
+        }
+        return ans;
+    }
+
+    //119.二叉树的右视图 - DFS
+    List<Integer> ans2 = new ArrayList<>();
+
+    public List<Integer> rightSideView2(TreeNode root) {
+        fun_119(root, 0);
+        return ans2;
+    }
+
+    private void fun_119(TreeNode node, int depth) {
+        if (node == null) return;
+        if (depth == ans2.size()) {
+            ans2.add(node.val);
+        }
+        depth++;
+        fun_119(node.right, depth);
+        fun_119(node.left, depth);
+    }
+
+    // 114.二叉树展开为链表 - 前序遍历版
+    public void flatten(TreeNode root) {
+        if (root == null) return;
+
+        List<TreeNode> list = new ArrayList();
+
+        fun(root, list);
+
+        for (int i = 0; i < list.size() - 1; i++) {
+            TreeNode cur = list.get(i);
+            cur.right = list.get(i + 1);
+            cur.left = null;
+        }
+
+
+    }
+
+    void fun(TreeNode node, List<TreeNode> list) {
+        if (node != null) {
+            list.add(node);
+            fun(node.left, list);
+            fun(node.right, list);
+        }
+    }
+
+    // 114.二叉树展开为链表 - 后序遍历
+    public void flatten2(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        //将根节点的左子树变成链表
+        flatten2(root.left);
+        //将根节点的右子树变成链表
+        flatten2(root.right);
+        TreeNode temp = root.right;
+        //把树的右边换成左边的链表
+        root.right = root.left;
+        //记得要将左边置空
+        root.left = null;
+        //找到树的最右边的节点
+        while (root.right != null) root = root.right;
+        //把右边的链表接到刚才树的最右边的节点
+        root.right = temp;
+    }
+
+    // 114.二叉树展开为链表 - 迭代思想
+    public void flatten3(TreeNode root) {
+        while (root != null) {
+            TreeNode curNode = root.left;
+            while (curNode != null && curNode.right != null) {
+                curNode = curNode.right;
+            }
+
+            if (curNode != null) {
+                curNode.right = root.right;
+                root.right = root.left;
+                root.left = null;
+
+            }
+            root = root.right;
+        }
+    }
+
+    // 105. 从前序与中序遍历序列构造二叉树
+    private Map<Integer, Integer> inorderMap;
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        inorderMap = new HashMap();
+        int N = inorder.length;
+        for (int i = 0; i < inorder.length; i++) {
+            inorderMap.put(inorder[i], i);
+        }
+
+        return fun(preorder, 0, N - 1, 0, N - 1);
+    }
+
+    private TreeNode fun(int[] preorder, int preLeft, int preRight, int inLeft, int inRight) {
+        if (preLeft > preRight) return null;
+
+        int rootval = preorder[preLeft];
+
+
+        int rootIndex = inorderMap.get(preorder[preLeft]);
+        int leftSum = rootIndex - inLeft;
+        TreeNode root = new TreeNode(rootval);
+        //构建左子树
+        root.left = fun(preorder, preLeft + 1, preLeft + leftSum, inLeft, rootIndex - 1);
+        //构建右子树
+        root.right = fun(preorder, preLeft + leftSum + 1, preRight, rootIndex + 1, inRight);
+        return root;
+    }
+
+    //437.路径总和Ⅲ --dfs
+    int ans3 = 0;
+    public int pathSum(TreeNode root, int targetSum) {
+        if (root == null) return 0;
+        fun(root, 0, targetSum);
+        pathSum(root.left, targetSum);
+        pathSum(root.right, targetSum);
+        return ans3;
+    }
+
+    private void fun(TreeNode node, int temp, int targetSum) {
+        if (node == null) return;
+        temp += node.val;
+        if (temp == targetSum) {
+            ans3++;
+        }
+        fun(node.left, temp, targetSum);
+        fun(node.right, temp, targetSum);
+
+    }
+
+    //236.二叉树的最近公共祖先
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == p || root == q || root == null) return root;
+        TreeNode left_result = lowestCommonAncestor(root.left, p, q);
+        TreeNode right_result = lowestCommonAncestor(root.right, p, q);
+        if (left_result == null && right_result == null) return null;
+        else if (left_result == null && right_result != null) return right_result;
+        else if (left_result != null && right_result == null)
+            return left_result;
+
+        else return root;
+
+    }
+    // 124. 二叉树中的最大路径和
+    int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        fun_124(root);
+        return maxSum;
+    }
+
+
+    public int fun_124(TreeNode node) {
+        if (node == null) return 0;
+
+        int left = Math.max(fun_124(node.left),0);
+        int right = Math.max(fun_124(node.right),0);
+        //以这个节点为根
+        int sum = node.val + left + right;
+
+        maxSum = Math.max(sum, maxSum);
+        //不以这个为根
+        return node.val + Math.max(left, right);
+    }
+
+    //回溯系列
+
+    // 46. 全排列
+    public List<List<Integer>> permute(int[] nums) {
+        int len = nums.length;
+        if (len == 0) return null;
+        if (len == 1) return new ArrayList<>(new ArrayList(Arrays.asList(nums)));
+
+        List<List<Integer>> ans = new ArrayList<>();
+        fun(ans, new ArrayList<>(), nums);
+        return ans;
+    }
+
+    private void fun(List<List<Integer>> ans, ArrayList<Integer> temp, int[] nums) {
+        if (temp.size() == nums.length) {
+            //这里注意将新的 ArrayList对象放入 ans中
+            ans.add(new ArrayList<>(temp));
+//            ans.add(temp);
+            return;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            if (!temp.contains(nums[i])) {
+                temp.add(nums[i]);
+                fun(ans, temp, nums);
+
+                temp.remove(temp.size() - 1);
+            }
+        }
+    }
+
+    //78. 子集 (返回一个数组所有子集)
+    public List<List<Integer>> subsets(int[] nums) {
+        if (nums == null || nums.length == 0) return null;
+
+        List<List<Integer>> ans = new ArrayList<>();
+
+        fun(ans, 0, nums, new ArrayList<>());
+        return ans;
+    }
+
+    private void fun(List<List<Integer>> ans, int index, int[] nums, List<Integer> temp) {
+        if (index == nums.length) {
+            ans.add(new ArrayList<>(temp));
+            return;
+        }
+        //不选择该元素
+        fun(ans, index + 1, nums, temp);
+
+        //选择该元素
+
+        temp.add(nums[index]);
+        fun(ans, index + 1, nums, temp);
+        temp.remove(temp.size() - 1);
+    }
+
+    // 39. 组合总和
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        fun(candidates, target, 0, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void fun(int[] arr, int rest, int index, List<Integer> temp, List<List<Integer>> ans) {
+        if (index == arr.length) return;
+        if (rest == 0) {
+            ans.add(new ArrayList<>(temp));
+            return;
+        }
+        fun(arr, rest, index + 1, temp, ans);
+        if (arr[index] <= rest) {
+            temp.add(arr[index]);
+            fun(arr, rest - arr[index], index, temp, ans);
+            temp.remove(temp.size() - 1);//回溯算法的精髓所在
+
+        }
+    }
+
+    // 22. 括号生成
+    public List<String> generateParenthesis(int n) {
+        List<String> ans = new ArrayList<>();
+        StringBuilder cur = new StringBuilder();
+        backTrack(ans, cur, 0, 0, n);
+        return ans;
+
+    }
+
+    private void backTrack(List<String> ans, StringBuilder cur, int leftSum, int rightSum, int leftMax) {
+        if (cur.length() == 2 * leftMax) {
+            System.out.println(cur.toString());
+            ans.add(cur.toString());
+        }
+        // 左边的括号 最多能有 n 个.
+        if (leftSum < leftMax) {
+            cur.append('(');
+            backTrack(ans, cur, leftSum + 1, rightSum, leftMax);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+        // 添加 右边的括号
+        if (rightSum < leftSum) {
+            cur.append(')');
+            backTrack(ans, cur, leftSum, rightSum + 1, leftMax);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+    }
+
+
+    //二分查找
+
+    //35.搜索插入位置
+    public int searchInsert(int[] nums, int target) {
+        int L = 0;
+        int R = nums.length - 1;
+        while (L <= R) {
+            int mid = (L + R) / 2;
+            if (nums[mid] == target) return mid;
+            else if (nums[mid] < target) {
+                L = mid + 1;
+            } else {
+                R = mid - 1;
+            }
+        }
+        return L;
+    }
+
+
+    //74.搜索二维矩阵
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int L = 0, R = matrix[0].length - 1;
+        while (L < matrix.length && R >= 0) {
+            int mid = matrix[L][R];
+            if (mid == target) {
+                return true;
+            } else if (mid < matrix[L][R]) {
+                L++;
+            } else {
+                R--;
+            }
+        }
+        return false;
+    }
+
+    //74.搜索二维矩阵 -  真正的二分
+    public boolean searchMatrix2(int[][] matrix, int target) {
+        int m = matrix.length, n = matrix[0].length;
+        int low = 0, high = m * n - 1;
+        while (low <= high) {
+            int mid = (high - low) / 2 + low;
+            int x = matrix[mid / n][mid % n];
+            if (x < target) {
+                low = mid + 1;
+            } else if (x > target) {
+                high = mid - 1;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //34.在排序数组中查找元素的第一个和最后一个位置
+    //二分法:将问题转化为 x>target-1 的最左的x的下标和y>target 的最左的y的下标,
+    //如果存在x=target的话,那么[x,  y-1]就是target 的[起始.终止]位置.
+    public int[] searchRange(int[] nums, int target) {
+        if (nums.length == 0) return new int[]{-1, -1};
+        int index1 = bs(nums, target - 1);
+        int index2 = bs(nums, target);
+        System.out.println(index1 + "," + index2);
+        return index1 <= index2 - 1 && nums[index1] == target ? new int[]{index1, index2 - 1} : new int[]{-1, -1};
+
+    }
+
+    private int bs(int[] nums, int tar) {
+        int L = 0;
+        int R = nums.length - 1;
+        int index = nums.length;
+        while (L <= R) {
+            int mid = (L + R) / 2;
+            if (nums[mid] > tar) {
+                index = mid;
+                R = mid - 1;
+
+            } else L = mid + 1;
+
+
+        }
+
+        return index;
+    }
+
+    //33.搜索旋转排序数组
+    public int search(int[] nums, int target) {
+
+        int N = nums.length;
+        if (N == 0) return -1;
+        if (N == 1) return nums[0] == target ? 0 : -1;
+        int L = 0, R = N - 1;
+        while (L <= R) {
+            int mid = (L + R) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[L] <= nums[mid]) {//mid左边是有序的
+                if (nums[L] <= target && target < nums[mid])
+                    R = mid - 1;
+                else L = mid + 1;
+
+            } else {//mid右边是有序的
+                if (nums[mid] < target && target <= nums[R])
+                    L = mid + 1;
+                else
+                    R = mid - 1;
+            }
+        }
+        return -1;
+
+
+    }
+
     //图论
+
     //200.岛屿数量
     //dfs解法
     public int numIslands(char[][] grid) {
@@ -94,39 +925,39 @@ public class Solution {
     public int orangesRotting(int[][] grid) {
         int rowLen = grid.length;
         int colLen = grid[0].length;
-        vis=new boolean[rowLen][colLen];
+        vis = new boolean[rowLen][colLen];
         LinkedList<int[]> queue = new LinkedList<>();
         int ans = 0;
-        for(int i = 0;i<rowLen;i++){
+        for (int i = 0; i < rowLen; i++) {
             for (int j = 0; j < colLen; j++) {
-                if(grid[i][j] ==2){
-                    queue.add(new int[]{i,j});
+                if (grid[i][j] == 2) {
+                    queue.add(new int[]{i, j});
                 }
             }
         }
-        while(!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             int size = queue.size();
-            for(int f=0;f<size;f++){
+            for (int f = 0; f < size; f++) {
                 int[] poll = queue.poll();
-                for(int i=0;i<4;i++){
+                for (int i = 0; i < 4; i++) {
                     int newX = poll[0] + direct[i][0];
-                    int newY= poll[1] + direct[i][1];
-                    if (newX < 0 || newX == grid.length || newY < 0 || newY == grid[0].length||   grid[newX][newY] ==2) {
+                    int newY = poll[1] + direct[i][1];
+                    if (newX < 0 || newX == grid.length || newY < 0 || newY == grid[0].length || grid[newX][newY] == 2) {
                         continue;
                     }
-                    grid[newX][newY] =2;
-                    queue.add(new int[]{newX,newY});
+                    grid[newX][newY] = 2;
+                    queue.add(new int[]{newX, newY});
 
                 }
 
             }
-            ans ++;
+            ans++;
 
         }
-        if(ans>0) ans--;
-        for(int i = 0;i<rowLen;i++){
+        if (ans > 0) ans--;
+        for (int i = 0; i < rowLen; i++) {
             for (int j = 0; j < colLen; j++) {
-                if(grid[i][j] ==1){
+                if (grid[i][j] == 1) {
                     return -1;
                 }
             }
