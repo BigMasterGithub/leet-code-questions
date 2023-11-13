@@ -249,6 +249,8 @@ public class Solution {
 
 
     //子串系列
+
+
     //560.和为K的子数组
     public int subarraySum(int[] nums, int k) {
         HashMap<Integer,Integer> preSumMap = new HashMap();
@@ -264,6 +266,8 @@ public class Solution {
         }
         return ans;
     }
+
+
     // 239. 滑动窗口最大值
     public int[] maxSlidingWindow(int[] nums, int k) {
         if (nums == null || nums.length < 2) return nums;
@@ -326,6 +330,24 @@ public class Solution {
         }
         return ansString;
 
+    }
+    //普通数组
+    //53.最大子数组和
+    public int maxSubArray(int[] nums) {
+        int[] dp = new int[nums.length];
+        for(int i =0 ;i < nums.length ; i++){
+            dp[i] =  nums[i];
+        }
+        dp[0] = nums[0];
+        int ans = dp[0];
+
+        for(int i = 1 ; i < nums.length; i++){
+
+            dp[i]= Math.max(nums[i] , nums[i] + dp[i-1]);
+            ans = Math.max(ans,dp[i]);
+
+        }
+        return ans;
     }
 
     //二叉树系列
@@ -411,7 +433,7 @@ public class Solution {
         return node;
     }
 
-    // 98. 验证二叉搜索树
+    //98. 验证二叉搜索树
     long preValue = Long.MIN_VALUE;
     public boolean flag = true;
 
@@ -668,226 +690,10 @@ public class Solution {
         return node.val + Math.max(left, right);
     }
 
-    //回溯系列
-
-    // 46. 全排列
-    public List<List<Integer>> permute(int[] nums) {
-        int len = nums.length;
-        if (len == 0) return null;
-        if (len == 1) return new ArrayList<>(new ArrayList(Arrays.asList(nums)));
-
-        List<List<Integer>> ans = new ArrayList<>();
-        fun(ans, new ArrayList<>(), nums);
-        return ans;
-    }
-
-    private void fun(List<List<Integer>> ans, ArrayList<Integer> temp, int[] nums) {
-        if (temp.size() == nums.length) {
-            //这里注意将新的 ArrayList对象放入 ans中
-            ans.add(new ArrayList<>(temp));
-//            ans.add(temp);
-            return;
-        }
-
-        for (int i = 0; i < nums.length; i++) {
-            if (!temp.contains(nums[i])) {
-                temp.add(nums[i]);
-                fun(ans, temp, nums);
-
-                temp.remove(temp.size() - 1);
-            }
-        }
-    }
-
-    //78. 子集 (返回一个数组所有子集)
-    public List<List<Integer>> subsets(int[] nums) {
-        if (nums == null || nums.length == 0) return null;
-
-        List<List<Integer>> ans = new ArrayList<>();
-
-        fun(ans, 0, nums, new ArrayList<>());
-        return ans;
-    }
-
-    private void fun(List<List<Integer>> ans, int index, int[] nums, List<Integer> temp) {
-        if (index == nums.length) {
-            ans.add(new ArrayList<>(temp));
-            return;
-        }
-        //不选择该元素
-        fun(ans, index + 1, nums, temp);
-
-        //选择该元素
-
-        temp.add(nums[index]);
-        fun(ans, index + 1, nums, temp);
-        temp.remove(temp.size() - 1);
-    }
-
-    // 39. 组合总和
-    public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        List<List<Integer>> ans = new ArrayList<>();
-        fun(candidates, target, 0, new ArrayList<>(), ans);
-        return ans;
-    }
-
-    private void fun(int[] arr, int rest, int index, List<Integer> temp, List<List<Integer>> ans) {
-        if (index == arr.length) return;
-        if (rest == 0) {
-            ans.add(new ArrayList<>(temp));
-            return;
-        }
-        fun(arr, rest, index + 1, temp, ans);
-        if (arr[index] <= rest) {
-            temp.add(arr[index]);
-            fun(arr, rest - arr[index], index, temp, ans);
-            temp.remove(temp.size() - 1);//回溯算法的精髓所在
-
-        }
-    }
-
-    // 22. 括号生成
-    public List<String> generateParenthesis(int n) {
-        List<String> ans = new ArrayList<>();
-        StringBuilder cur = new StringBuilder();
-        backTrack(ans, cur, 0, 0, n);
-        return ans;
-
-    }
-
-    private void backTrack(List<String> ans, StringBuilder cur, int leftSum, int rightSum, int leftMax) {
-        if (cur.length() == 2 * leftMax) {
-            System.out.println(cur.toString());
-            ans.add(cur.toString());
-        }
-        // 左边的括号 最多能有 n 个.
-        if (leftSum < leftMax) {
-            cur.append('(');
-            backTrack(ans, cur, leftSum + 1, rightSum, leftMax);
-            cur.deleteCharAt(cur.length() - 1);
-        }
-        // 添加 右边的括号
-        if (rightSum < leftSum) {
-            cur.append(')');
-            backTrack(ans, cur, leftSum, rightSum + 1, leftMax);
-            cur.deleteCharAt(cur.length() - 1);
-        }
-    }
-
-
-    //二分查找
-
-    //35.搜索插入位置
-    public int searchInsert(int[] nums, int target) {
-        int L = 0;
-        int R = nums.length - 1;
-        while (L <= R) {
-            int mid = (L + R) / 2;
-            if (nums[mid] == target) return mid;
-            else if (nums[mid] < target) {
-                L = mid + 1;
-            } else {
-                R = mid - 1;
-            }
-        }
-        return L;
-    }
-
-
-    //74.搜索二维矩阵
-    public boolean searchMatrix(int[][] matrix, int target) {
-        int L = 0, R = matrix[0].length - 1;
-        while (L < matrix.length && R >= 0) {
-            int mid = matrix[L][R];
-            if (mid == target) {
-                return true;
-            } else if (mid < matrix[L][R]) {
-                L++;
-            } else {
-                R--;
-            }
-        }
-        return false;
-    }
-
-    //74.搜索二维矩阵 -  真正的二分
-    public boolean searchMatrix2(int[][] matrix, int target) {
-        int m = matrix.length, n = matrix[0].length;
-        int low = 0, high = m * n - 1;
-        while (low <= high) {
-            int mid = (high - low) / 2 + low;
-            int x = matrix[mid / n][mid % n];
-            if (x < target) {
-                low = mid + 1;
-            } else if (x > target) {
-                high = mid - 1;
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //34.在排序数组中查找元素的第一个和最后一个位置
-    //二分法:将问题转化为 x>target-1 的最左的x的下标和y>target 的最左的y的下标,
-    //如果存在x=target的话,那么[x,  y-1]就是target 的[起始.终止]位置.
-    public int[] searchRange(int[] nums, int target) {
-        if (nums.length == 0) return new int[]{-1, -1};
-        int index1 = bs(nums, target - 1);
-        int index2 = bs(nums, target);
-        System.out.println(index1 + "," + index2);
-        return index1 <= index2 - 1 && nums[index1] == target ? new int[]{index1, index2 - 1} : new int[]{-1, -1};
-
-    }
-
-    private int bs(int[] nums, int tar) {
-        int L = 0;
-        int R = nums.length - 1;
-        int index = nums.length;
-        while (L <= R) {
-            int mid = (L + R) / 2;
-            if (nums[mid] > tar) {
-                index = mid;
-                R = mid - 1;
-
-            } else L = mid + 1;
-
-
-        }
-
-        return index;
-    }
-
-    //33.搜索旋转排序数组
-    public int search(int[] nums, int target) {
-
-        int N = nums.length;
-        if (N == 0) return -1;
-        if (N == 1) return nums[0] == target ? 0 : -1;
-        int L = 0, R = N - 1;
-        while (L <= R) {
-            int mid = (L + R) / 2;
-            if (nums[mid] == target) return mid;
-            if (nums[L] <= nums[mid]) {//mid左边是有序的
-                if (nums[L] <= target && target < nums[mid])
-                    R = mid - 1;
-                else L = mid + 1;
-
-            } else {//mid右边是有序的
-                if (nums[mid] < target && target <= nums[R])
-                    L = mid + 1;
-                else
-                    R = mid - 1;
-            }
-        }
-        return -1;
-
-
-    }
-
     //图论
 
     //200.岛屿数量
+
     //dfs解法
     public int numIslands(char[][] grid) {
         int rowLen = grid.length;
@@ -1093,6 +899,226 @@ public class Solution {
         }
     }
 
+
+    //回溯系列
+    // 46. 全排列
+    public List<List<Integer>> permute(int[] nums) {
+        int len = nums.length;
+        if (len == 0) return null;
+        if (len == 1) return new ArrayList<>(new ArrayList(Arrays.asList(nums)));
+
+        List<List<Integer>> ans = new ArrayList<>();
+        fun(ans, new ArrayList<>(), nums);
+        return ans;
+    }
+
+    private void fun(List<List<Integer>> ans, ArrayList<Integer> temp, int[] nums) {
+        if (temp.size() == nums.length) {
+            //这里注意将新的 ArrayList对象放入 ans中
+            ans.add(new ArrayList<>(temp));
+//            ans.add(temp);
+            return;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            if (!temp.contains(nums[i])) {
+                temp.add(nums[i]);
+                fun(ans, temp, nums);
+
+                temp.remove(temp.size() - 1);
+            }
+        }
+    }
+
+    //78. 子集 (返回一个数组所有子集)
+    public List<List<Integer>> subsets(int[] nums) {
+        if (nums == null || nums.length == 0) return null;
+
+        List<List<Integer>> ans = new ArrayList<>();
+
+        fun(ans, 0, nums, new ArrayList<>());
+        return ans;
+    }
+
+    private void fun(List<List<Integer>> ans, int index, int[] nums, List<Integer> temp) {
+        if (index == nums.length) {
+            ans.add(new ArrayList<>(temp));
+            return;
+        }
+        //不选择该元素
+        fun(ans, index + 1, nums, temp);
+
+        //选择该元素
+
+        temp.add(nums[index]);
+        fun(ans, index + 1, nums, temp);
+        temp.remove(temp.size() - 1);
+    }
+
+    // 39. 组合总和
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        fun(candidates, target, 0, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void fun(int[] arr, int rest, int index, List<Integer> temp, List<List<Integer>> ans) {
+        if (index == arr.length) return;
+        if (rest == 0) {
+            ans.add(new ArrayList<>(temp));
+            return;
+        }
+        fun(arr, rest, index + 1, temp, ans);
+        if (arr[index] <= rest) {
+            temp.add(arr[index]);
+            fun(arr, rest - arr[index], index, temp, ans);
+            temp.remove(temp.size() - 1);//回溯算法的精髓所在
+
+        }
+    }
+
+    // 22. 括号生成
+    public List<String> generateParenthesis(int n) {
+        List<String> ans = new ArrayList<>();
+        StringBuilder cur = new StringBuilder();
+        backTrack(ans, cur, 0, 0, n);
+        return ans;
+
+    }
+
+    private void backTrack(List<String> ans, StringBuilder cur, int leftSum, int rightSum, int leftMax) {
+        if (cur.length() == 2 * leftMax) {
+            System.out.println(cur.toString());
+            ans.add(cur.toString());
+        }
+        // 左边的括号 最多能有 n 个.
+        if (leftSum < leftMax) {
+            cur.append('(');
+            backTrack(ans, cur, leftSum + 1, rightSum, leftMax);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+        // 添加 右边的括号
+        if (rightSum < leftSum) {
+            cur.append(')');
+            backTrack(ans, cur, leftSum, rightSum + 1, leftMax);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+    }
+
+
+    //二分查找
+
+    //35.搜索插入位置
+    public int searchInsert(int[] nums, int target) {
+        int L = 0;
+        int R = nums.length - 1;
+        while (L <= R) {
+            int mid = (L + R) / 2;
+            if (nums[mid] == target) return mid;
+            else if (nums[mid] < target) {
+                L = mid + 1;
+            } else {
+                R = mid - 1;
+            }
+        }
+        return L;
+    }
+
+
+    //74.搜索二维矩阵
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int L = 0, R = matrix[0].length - 1;
+        while (L < matrix.length && R >= 0) {
+            int mid = matrix[L][R];
+            if (mid == target) {
+                return true;
+            } else if (mid < matrix[L][R]) {
+                L++;
+            } else {
+                R--;
+            }
+        }
+        return false;
+    }
+
+    //74.搜索二维矩阵 -  真正的二分
+    public boolean searchMatrix2(int[][] matrix, int target) {
+        int m = matrix.length, n = matrix[0].length;
+        int low = 0, high = m * n - 1;
+        while (low <= high) {
+            int mid = (high - low) / 2 + low;
+            int x = matrix[mid / n][mid % n];
+            if (x < target) {
+                low = mid + 1;
+            } else if (x > target) {
+                high = mid - 1;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //34.在排序数组中查找元素的第一个和最后一个位置
+
+    //二分法:将问题转化为 x>target-1 的最左的x的下标和y>target 的最左的y的下标,
+    //如果存在x=target的话,那么[x,  y-1]就是target 的[起始.终止]位置.
+    public int[] searchRange(int[] nums, int target) {
+        if (nums.length == 0) return new int[]{-1, -1};
+        int index1 = bs(nums, target - 1);
+        int index2 = bs(nums, target);
+        System.out.println(index1 + "," + index2);
+        return index1 <= index2 - 1 && nums[index1] == target ? new int[]{index1, index2 - 1} : new int[]{-1, -1};
+
+    }
+
+    private int bs(int[] nums, int tar) {
+        int L = 0;
+        int R = nums.length - 1;
+        int index = nums.length;
+        while (L <= R) {
+            int mid = (L + R) / 2;
+            if (nums[mid] > tar) {
+                index = mid;
+                R = mid - 1;
+
+            } else L = mid + 1;
+
+
+        }
+
+        return index;
+    }
+
+    //33.搜索旋转排序数组
+    public int search(int[] nums, int target) {
+
+        int N = nums.length;
+        if (N == 0) return -1;
+        if (N == 1) return nums[0] == target ? 0 : -1;
+        int L = 0, R = N - 1;
+        while (L <= R) {
+            int mid = (L + R) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[L] <= nums[mid]) {//mid左边是有序的
+                if (nums[L] <= target && target < nums[mid])
+                    R = mid - 1;
+                else L = mid + 1;
+
+            } else {//mid右边是有序的
+                if (nums[mid] < target && target <= nums[R])
+                    L = mid + 1;
+                else
+                    R = mid - 1;
+            }
+        }
+        return -1;
+
+
+    }
+
+    //栈
+
     // 20. 有效的括号
     public boolean isValid(String s) {
         char[] arr = s.toCharArray();
@@ -1216,6 +1242,9 @@ public class Solution {
         return ans;
     }
 
+
+    //堆
+
     //215. 数组中的第K个最大元素 (优先队列)
     public int findKthLargest(int[] nums, int k) {
         //       Collections.reverseOrder() 逆序排序比较器
@@ -1301,6 +1330,9 @@ public class Solution {
         }
 
     }
+
+
+    //贪心算法
 
     //121. 买卖股票的最佳时机
     public int maxProfit_121(int[] prices) {
@@ -1431,6 +1463,9 @@ public class Solution {
         return false;
 
     }
+
+    //动态规划
+
 
     //118.杨辉三角
     public List<List<Integer>> generate(int numRows) {
