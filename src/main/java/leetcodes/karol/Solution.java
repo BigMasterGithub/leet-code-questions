@@ -483,37 +483,6 @@ public class Solution {
         return true;
     }
 
-    //131.分割回文串、
-    boolean[][] dp;
-    List<List<String>> ans_131 = new ArrayList<>();
-    LinkedList<String> cur = new LinkedList<>();
-
-    public List<List<String>> partition(String s) {
-        dp = new boolean[s.length()][s.length()];
-        for (int L = s.length() - 1; L >= 0; L--) {
-            for (int R = L; R < s.length(); R++) {
-                if (s.charAt(L) == s.charAt(R)) {
-                    if (R - L <= 2 || dp[L + 1][R - 1]) dp[L][R] = true;
-                }
-            }
-        }
-        fun(s, 0);
-        return ans_131;
-    }
-
-    private void fun(String s, int i) {
-        if (i == s.length()) {
-            ans_131.add(new ArrayList<>(cur));
-        }
-        for (int R = i; R < s.length(); R++) {
-            if (dp[i][R] == true) {
-                cur.add(s.substring(i, R + 1));
-
-                fun(s, R + 1);
-                cur.removeLast();
-            }
-        }
-    }
 
     //1005.K次取反后最大化的数组和
     public int largestSumAfterKNegations(int[] nums, int k) {
@@ -574,8 +543,6 @@ public class Solution {
     }
 
 
-
-
     //232
     class MyQueue {
         LinkedList<Integer> stack_in;
@@ -612,7 +579,6 @@ public class Solution {
             return stack_out.isEmpty() && stack_in.isEmpty();
         }
     }
-
 
 
     //1135
@@ -720,7 +686,6 @@ public class Solution {
         }
 
     }
-
 
 
     // 17. 电话号码的字母组合
@@ -915,9 +880,6 @@ public class Solution {
     }
 
 
-
-
-
     //1124. 表现良好的最长时间段
     public int longestWPI(int[] hours) {
         int n = hours.length;
@@ -969,6 +931,9 @@ public class Solution {
         return ans;
     }
 
+
+
+
     // 48. 旋转图像
     public void rotate(int[][] matrix) {
         int colLen = matrix.length;
@@ -1015,34 +980,11 @@ public class Solution {
     }
 
 
-    // 56. 合并区间
-    public int[][] merge(int[][] intervals) {
-        int rowLen = intervals.length;
-        Arrays.sort(intervals, (v1, v2) -> v1[0] - v2[0]);
-        int[][] ans = new int[rowLen][2];
-        int index = -1;
-
-
-        for (int i = 0; i < rowLen; i++) {
-            int L = intervals[i][0]; // 左边界
-            int R = intervals[i][1];  //右边界
-            if (index == -1 || L > ans[index][1]) ans[++index] = intervals[i];
-            else ans[index][1] = Math.max(ans[index][1], R);
-
-        }
-
-
-        return Arrays.copyOf(ans, index + 1);
-
-    }
-
-
     private void swap(int[] nums, int a, int b) {
         int temp = nums[a];
         nums[a] = nums[b];
         nums[b] = temp;
     }
-
 
 
     //78. 子集 (返回一个数组所有子集) 方法二 : 非递归
@@ -1066,62 +1008,7 @@ public class Solution {
         return ans;
     }
 
-    // 79. 单词搜索
 
-    boolean visit[][];
-
-    public boolean exist(char[][] board, String word) {
-        if (word.length() == 0 || board.length == 0) return false;
-        visit = new boolean[board.length][board[0].length];
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                boolean flag = fun(board, i, j, 0, word);
-                if (flag) return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean fun(char[][] board, int i, int j, int index, String word) {
-        if (index == word.length()) {
-            return true;
-        }
-        if (board[i][j] != word.charAt(index)) return false;
-
-
-        visit[i][j] = true;
-        //往上走
-        if (i - 1 >= 0 && visit[i - 1][j] == false) {
-
-            boolean flag = fun(board, i - 1, j, index + 1, word);
-            if (flag) return true;
-
-        }
-
-        //往左走
-        if (j - 1 >= 0 && visit[i][j - 1] == false) {
-
-            boolean flag = fun(board, i, j - 1, index + 1, word);
-            if (flag) return true;
-
-        }
-        //往下走
-        if (i + 1 < board.length && visit[i + 1][j] == false) {
-
-            boolean flag = fun(board, i + 1, j, index + 1, word);
-            if (flag) return true;
-
-        }
-        if (j + 1 < board[0].length && visit[i][j + 1] == false) {
-            //往右走
-
-            boolean flag = fun(board, i, j + 1, index + 1, word);
-            if (flag) return true;
-        }
-        visit[i][j] = false;
-        return false;
-
-    }
 
     // 94. 二叉树的中序遍历
     public List<Integer> inorderTraversal(TreeNode root) {
@@ -1151,9 +1038,6 @@ public class Solution {
         }
         return dp[n];
     }
-
-
-
 
 
     // 102. 二叉树的层序遍历
@@ -1193,11 +1077,6 @@ public class Solution {
         int right = fun2(node.right);
         return 1 + Math.max(left, right);
     }
-
-
-
-
-
 
 
     // 139. 单词拆分  动态规划
@@ -1437,8 +1316,6 @@ public class Solution {
     }
 
 
-
-
     //206. 反转链表
     public ListNode reverseList(ListNode head) {
         ListNode cur = head;
@@ -1596,7 +1473,6 @@ public class Solution {
     }
 
 
-
     //234. 回文链表 时间O(N) ,空间O(1)
     public boolean isPalindrome(ListNode head) {
         if (head == null || head.next == null) return true;
@@ -1712,7 +1588,6 @@ public class Solution {
     }
 
 
-
     //225. 用一个队列实现栈
     class MyStack2 {
         Queue<Integer> queue;
@@ -1780,22 +1655,6 @@ public class Solution {
             if (stack2.isEmpty()) return -1;
             else return stack2.pop();
         }
-    }
-
-    // 240. 搜索二维矩阵 II
-    public boolean searchMatrix(int[][] matrix, int target) {
-        int rowlen = matrix.length;
-        int collen = matrix[0].length;
-        int i = 0;
-        int j = collen - 1;
-        while (i < rowlen && j >= 0) {
-            if (target < matrix[i][j]) {
-                j--;
-            } else if (target > matrix[i][j]) {
-                i++;
-            } else return true;
-        }
-        return false;
     }
 
 
@@ -1933,9 +1792,10 @@ public class Solution {
 
         }
     }
+
     public boolean isValid(String s) {
         char[] arr = s.toCharArray();
-        Stack<Character> stack = new  Stack<>();
+        Stack<Character> stack = new Stack<>();
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] == '(') stack.push(')');
             else if (arr[i] == '[') stack.push(']');
@@ -1949,6 +1809,7 @@ public class Solution {
         }
         return stack.isEmpty();
     }
+
     // 309. 最佳买卖股票时机含冷冻期
     public int maxProfit2(int[] prices) {
         int len = prices.length;
@@ -2231,8 +2092,6 @@ public class Solution {
         return false;
 
     }
-
-
 
 
     //26

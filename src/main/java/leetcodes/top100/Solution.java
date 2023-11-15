@@ -17,6 +17,8 @@ public class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
+        solution.firstMissingPositive(new int[]{-1, 1, 2, 3});
+//        solution.rotate(new int[]{1,2,3,4,5,6,7},3);
 //        solution.nextPermutation(new int[]{1, 3, 4, 5});
 //        solution.majorityElement(new int[]{7, 7, 5, 7, 5, 1, 5, 7, 5, 5, 7, 7, 7, 7, 7, 7});\
 //        solution.minDistance("bvdab","pandans");
@@ -57,23 +59,23 @@ public class Solution {
 //        solution.orangesRotting(new int[][]{{0}});
 //        solution.searchRange(new int[]{2, 2, 3}, 4);
 //        solution.generateParenthesis(3);
-        solution.minWindow2("a","a");
+//        solution.minWindow2("a", "a");
     }
 
     //哈希
     //1.两数之和
     public int[] twoSum(int[] nums, int target) {
         Map<Integer, Integer> map = new HashMap<>();
-        for(int i=0;i<nums.length;i++){
-            if(map.containsKey(target-nums[i])){
-                return new int[]{i,map.get(target-nums[i])};
-            }
-            else{
-                map.put(nums[i],i);
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(target - nums[i])) {
+                return new int[]{i, map.get(target - nums[i])};
+            } else {
+                map.put(nums[i], i);
             }
         }
-        return new int[]{-1,-1};
+        return new int[]{-1, -1};
     }
+
     //49.字母异位词分组
     public List<List<String>> groupAnagrams(String[] strs) {
         Map<String, List<String>> map = new HashMap<String, List<String>>();
@@ -108,6 +110,7 @@ public class Solution {
         return max;
 
     }
+
     //双指针
     //283. 移动零
     public void moveZeroes(int[] nums) {
@@ -167,6 +170,7 @@ public class Solution {
 
         return ans;
     }
+
     //42. 接雨水
     public int trap(int[] height) {
         int len = height.length;
@@ -192,6 +196,7 @@ public class Solution {
 
 
     }
+
     //滑动窗口系列
     //438 滑动窗口
     public List<Integer> findAnagrams(String s, String p) {
@@ -247,22 +252,21 @@ public class Solution {
     }
 
 
-
     //子串系列
 
 
     //560.和为K的子数组
     public int subarraySum(int[] nums, int k) {
-        HashMap<Integer,Integer> preSumMap = new HashMap();
-        preSumMap.put(0,1);
-        int ans = 0 ;
+        HashMap<Integer, Integer> preSumMap = new HashMap();
+        preSumMap.put(0, 1);
+        int ans = 0;
         int sum = 0;
-        for(int i =0 ;i <nums.length;i++){
-            sum +=nums[i];
-            if(preSumMap.containsKey(sum - k)){
-                ans+=preSumMap.get(sum-k);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (preSumMap.containsKey(sum - k)) {
+                ans += preSumMap.get(sum - k);
             }
-            preSumMap.put(sum,preSumMap.getOrDefault(sum,0) + 1);
+            preSumMap.put(sum, preSumMap.getOrDefault(sum, 0) + 1);
         }
         return ans;
     }
@@ -289,7 +293,7 @@ public class Solution {
                 q.pollFirst();
             }
             //（4）i的值为k-1时，窗口已经形成。
-            if (i>= k-1) {
+            if (i >= k - 1) {
                 ans[i - k + 1] = nums[q.peekFirst()];
             }
         }
@@ -331,24 +335,215 @@ public class Solution {
         return ansString;
 
     }
+
     //普通数组
     //53.最大子数组和
     public int maxSubArray(int[] nums) {
         int[] dp = new int[nums.length];
-        for(int i =0 ;i < nums.length ; i++){
-            dp[i] =  nums[i];
+        for (int i = 0; i < nums.length; i++) {
+            dp[i] = nums[i];
         }
         dp[0] = nums[0];
         int ans = dp[0];
 
-        for(int i = 1 ; i < nums.length; i++){
+        for (int i = 1; i < nums.length; i++) {
 
-            dp[i]= Math.max(nums[i] , nums[i] + dp[i-1]);
-            ans = Math.max(ans,dp[i]);
+            dp[i] = Math.max(nums[i], nums[i] + dp[i - 1]);
+            ans = Math.max(ans, dp[i]);
 
         }
         return ans;
     }
+
+    // 56. 合并区间
+    public int[][] merge(int[][] intervals) {
+        int rowLen = intervals.length;
+        Arrays.sort(intervals, (v1, v2) -> v1[0] - v2[0]);
+        int[][] ans = new int[rowLen][2];
+        int index = -1;
+
+
+        for (int i = 0; i < rowLen; i++) {
+            int L = intervals[i][0]; // 左边界
+            int R = intervals[i][1];  //右边界
+            if (index == -1 || L > ans[index][1]) ans[++index] = intervals[i];
+            else ans[index][1] = Math.max(ans[index][1], R);
+
+        }
+
+
+        return Arrays.copyOf(ans, index + 1);
+
+    }
+
+    //189.轮转数组
+    public void rotate(int[] nums, int k) {
+        k %= nums.length;
+        fun_189(nums, 0, nums.length - 1);
+        System.out.println(Arrays.toString(nums));
+        fun_189(nums, k, nums.length - 1);
+        System.out.println(Arrays.toString(nums));
+
+        fun_189(nums, 0, k - 1);
+        System.out.println(Arrays.toString(nums));
+
+    }
+
+    private void fun_189(int nums[], int L, int R) {
+        while (L < R) {
+            int temp = nums[L];
+            nums[L] = nums[R];
+            nums[R] = temp;
+            L++;
+            R--;
+        }
+
+    }
+
+    //41.缺失的第一个正数
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+        for (int i = 0; i < n; ++i) {
+            System.out.println("开始前：" + Arrays.toString(nums) + "i = " + i);
+            while (nums[i] > 0 && nums[i] <= n && nums[nums[i] - 1] != nums[i]) {
+                int temp = nums[nums[i] - 1];
+                nums[nums[i] - 1] = nums[i];
+                nums[i] = temp;
+
+                System.out.println(Arrays.toString(nums));
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] != i + 1) {
+                return i + 1;
+            }
+        }
+        return n + 1;
+    }
+
+    //矩阵
+
+    //73.矩阵置零
+    public void setZeroes(int[][] matrix) {
+        int rowLen = matrix.length;
+        int colLen = matrix[0].length;
+        boolean row0 = false, col0 = false;
+        for (int i = 0; i < colLen; i++) {
+            if (matrix[0][i] == 0) {
+                row0 = true;
+            }
+
+        }
+        for (int i = 0; i < rowLen; i++) {
+            if (matrix[i][0] == 0) {
+                col0 = true;
+            }
+
+        }
+        for (int i = 1; i < rowLen; i++) {
+            for (int j = 1; j < colLen; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+        for (int i = 1; i < rowLen; i++) {
+            for (int j = 1; j < colLen; j++) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        if (col0) {
+            for (int i = 0; i < rowLen; i++) {
+                matrix[i][0] = 0;
+            }
+        }
+        if (row0) {
+            for (int j = 0; j < colLen; j++) {
+                matrix[0][j] = 0;
+            }
+        }
+
+
+    }
+
+    //54.螺旋矩阵
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> ans = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return ans;
+
+        int up = 0, down = matrix.length - 1;
+        int left = 0, right = matrix[0].length - 1;
+
+        while (true) {
+            for (int i = left; i <= right; i++) { // 左->右
+                ans.add(matrix[up][i]);
+            }
+            if (++up > down) break;
+            for (int i = up; i <= down; i++) { // 上->下
+                ans.add(matrix[i][right]);
+            }
+            if (--right < left) break;
+            for (int i = right; i >= left; i--) { // 右->左
+                ans.add(matrix[down][i]);
+            }
+            if (--down < up) break;
+            for (int i = down; i >= up; i--) { // 下->上
+                ans.add(matrix[i][left]);
+            }
+            if (++left > right) break;
+        }
+        return ans;
+    }
+
+    // 48. 旋转图像
+    public void rotate(int[][] matrix) {
+        int colLen = matrix.length;
+        int rowLen = matrix.length;
+        //上下交换
+        for (int i = 0; i < rowLen / 2; i++) {
+            for (int j = 0; j < colLen; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[colLen - 1 - i][j];
+                matrix[colLen - 1 - i][j] = temp;
+            }
+
+        }
+
+        // 主对角线交换
+        for (int i = 1; i < colLen; i++) {
+            int L = 0;
+            int R = i;
+            while (L < colLen && R < colLen) {
+
+                int temp = matrix[L][R];
+                matrix[L][R] = matrix[R][L];
+                matrix[R][L] = temp;
+                L++;
+                R++;
+            }
+        }
+
+    }
+
+    // 240. 搜索二维矩阵 II  z字形查找法
+    public boolean searchMatrix3(int[][] matrix, int target) {
+        int rowlen = matrix.length;
+        int collen = matrix[0].length;
+        int i = 0;
+        int j = collen - 1;
+        while (i < rowlen && j >= 0) {
+            if (target < matrix[i][j]) {
+                j--;
+            } else if (target > matrix[i][j]) {
+                i++;
+            } else return true;
+        }
+        return false;
+    }
+
 
     //二叉树系列
 
@@ -358,6 +553,7 @@ public class Solution {
         fun_94(root, ans);
         return ans;
     }
+
 
     private void fun_94(TreeNode node, List<Integer> ans) {
         if (node == null) return;
@@ -636,6 +832,7 @@ public class Solution {
 
     //437.路径总和Ⅲ --dfs
     int ans3 = 0;
+
     public int pathSum(TreeNode root, int targetSum) {
         if (root == null) return 0;
         fun(root, 0, targetSum);
@@ -668,6 +865,7 @@ public class Solution {
         else return root;
 
     }
+
     // 124. 二叉树中的最大路径和
     int maxSum = Integer.MIN_VALUE;
 
@@ -680,8 +878,8 @@ public class Solution {
     public int fun_124(TreeNode node) {
         if (node == null) return 0;
 
-        int left = Math.max(fun_124(node.left),0);
-        int right = Math.max(fun_124(node.right),0);
+        int left = Math.max(fun_124(node.left), 0);
+        int right = Math.max(fun_124(node.right), 0);
         //以这个节点为根
         int sum = node.val + left + right;
 
@@ -901,6 +1099,7 @@ public class Solution {
 
 
     //回溯系列
+
     // 46. 全排列
     public List<List<Integer>> permute(int[] nums) {
         int len = nums.length;
@@ -955,6 +1154,34 @@ public class Solution {
         temp.remove(temp.size() - 1);
     }
 
+    //17.电话号码的字母组合
+    String[] numString = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+    public List<String> letterCombinations(String digits) {
+        List<String> ans = new ArrayList();
+
+        StringBuilder cur = new StringBuilder();
+        if (digits == null || digits.length() == 0) return ans;
+
+        fun_17(digits, 0, cur, ans);
+        return ans;
+    }
+
+    private void fun_17(String digits, int num, StringBuilder cur, List<String> ans) {
+        if (num == digits.length()) {
+            ans.add(cur.toString());
+            return;
+        }
+        String curStr = numString[digits.charAt(num) - '0'];
+        for (int i = 0; i < curStr.length(); i++) {
+            cur.append(curStr.charAt(i));
+            fun_17(digits, num + 1, cur, ans);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+
+
+    }
+
     // 39. 组合总和
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         List<List<Integer>> ans = new ArrayList<>();
@@ -1003,6 +1230,136 @@ public class Solution {
             backTrack(ans, cur, leftSum, rightSum + 1, leftMax);
             cur.deleteCharAt(cur.length() - 1);
         }
+    }
+
+    //79.单词搜索
+    boolean[][] visited;
+
+    public boolean exist(char[][] board, String word) {
+        int rowLen = board.length;
+        int colLen = board[0].length;
+        visited = new boolean[rowLen][colLen];
+        for (int i = 0; i < rowLen; i++) {
+            for (int j = 0; j < colLen; j++) {
+                boolean ans = fun_79(i, j, board, word, 0);
+                if (ans) return true;
+            }
+
+        }
+        return false;
+
+    }
+
+    private boolean fun_79(int i, int j, char[][] board, String word, int curIndex) {
+        if (board[i][j] != word.charAt(curIndex)) return false;
+        else if (curIndex == word.length() - 1) {
+            return true;
+        }
+        visited[i][j] = true;
+        boolean ans = false;
+        for (int k = 0; k < 4; k++) {
+            int newX = direct[k][0] + i;
+            int newY = direct[k][1] + j;
+            if (newX >= 0 && newX < board.length
+                    && newY >= 0 && newY < board[0].length) {
+                if (visited[newX][newY] == false) {
+                    boolean curAns = fun_79(newX, newY, board, word, curIndex + 1);
+                    if (curAns) {
+                        ans = true;
+                        break;
+                    }
+                }
+            }
+
+        }
+        visited[i][j] = false;
+        return ans;
+    }
+
+    //131.分割回文串、
+    boolean[][] dp;
+    List<List<String>> ans_131 = new ArrayList<>();
+    LinkedList<String> cur = new LinkedList<>();
+
+    public List<List<String>> partition(String s) {
+        dp = new boolean[s.length()][s.length()];
+        for (int L = s.length() - 1; L >= 0; L--) {
+            for (int R = L; R < s.length(); R++) {
+                if (s.charAt(L) == s.charAt(R)) {
+                    if (R - L <= 2 || dp[L + 1][R - 1]) dp[L][R] = true;
+                }
+            }
+        }
+        fun(s, 0);
+        return ans_131;
+    }
+
+    private void fun(String s, int i) {
+        if (i == s.length()) {
+            ans_131.add(new ArrayList<>(cur));
+        }
+        for (int R = i; R < s.length(); R++) {
+            if (dp[i][R] == true) {
+                cur.add(s.substring(i, R + 1));
+
+                fun(s, R + 1);
+                cur.removeLast();
+            }
+        }
+    }
+
+    //51.N皇后
+    List<List<String>> ans_51 = new ArrayList<>();
+
+    public List<List<String>> solveNQueens(int n) {
+        char[][] chessboard = new char[n][n];
+        for (char[] c : chessboard) {
+            Arrays.fill(c, '.');
+        }
+        fun_51(0, n, chessboard);
+        return ans_51;
+    }
+
+    private void fun_51(int curRowIndex, int n, char[][] chessboard) {
+        if (curRowIndex == n) {
+            List<String> result = new ArrayList<>();
+            for (char[] c : chessboard) {
+                result.add(String.copyValueOf(c));
+            }
+            ans_51.add(result);
+            return;
+        }
+        int rowLen = n;
+        for (int i = 0; i < rowLen; i++) {
+            if (isValid_51(curRowIndex, i, n, chessboard)) {
+                chessboard[curRowIndex][i] = 'Q';
+                fun_51(curRowIndex + 1, n, chessboard);
+                chessboard[curRowIndex][i] = '.';
+            }
+        }
+
+    }
+
+    private boolean isValid_51(int curRowIndex, int curColIndex, int n, char[][] chessboard) {
+        //检查【列】
+        for (int k = 0; k < n; k++) {
+            if (chessboard[k][curColIndex] == 'Q') {
+                return false;
+            }
+        }
+        //检查【主对角线】
+        for (int i = curRowIndex-1,j=curColIndex-1; i>=0&&j>=0;i--,j--) {
+                if(chessboard[i][j]=='Q'){
+                    return false;
+                }
+        }
+        //检查【斜对角线】
+        for (int i = curRowIndex-1,j=curColIndex+1; i>=0&&j<n;i--,j++) {
+            if(chessboard[i][j]=='Q'){
+                return false;
+            }
+        }
+        return true;
     }
 
 
