@@ -1190,14 +1190,33 @@ public class Solution {
 
     // 160. 相交链表
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
-        if (headA == null || headB == null) return null;
-        ListNode pA = headA, pB = headB;
-        while (pA != pB) {
-            pA = pA == null ? headB : pA.next;
-            pB = pB == null ? headA : pB.next;
+        ListNode curA = headA;
+        int lenA= 0;
+        while(curA!=null){
+            lenA++;
+            curA = curA.next;
         }
-        return pA;
+        ListNode curB = headB;
+        int lenB= 0;
+        while(curB!=null){
+            lenB++;
+            curB = curB.next;
+        }
+        int distance = Math.abs(lenA-lenB);
+        ListNode temp = lenA>lenB?headA:headB;
+        while(distance>=1){
+            temp = temp.next;
+            distance--;
+        }
+        ListNode  temp2=lenA<lenB?headA:headB;
+        while(temp2!=null && temp!=null){
+            if(temp2 == temp)
+                return temp2;
+            temp2 = temp2.next;
+            temp = temp.next;
 
+        }
+        return null;
     }
 
 
@@ -1318,15 +1337,19 @@ public class Solution {
 
     //206. 反转链表
     public ListNode reverseList(ListNode head) {
+        if(head ==null || head.next ==null) return head;
         ListNode cur = head;
-        ListNode last = null;
-        while (cur != null) {
-            ListNode nextNode = cur.next;
-            cur.next = last;
-            last = cur;
-            cur = nextNode;
+        ListNode behind= head.next;
+        ListNode tail=null;
+        while(cur!=null){
+            cur.next = tail;
+            tail=cur;
+            cur = behind;
+            if(behind!=null)
+                behind = behind.next;
+
         }
-        return last;
+        return tail;
     }
 
     //207. 课程表

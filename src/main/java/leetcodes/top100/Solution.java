@@ -1470,6 +1470,55 @@ public class Solution {
             }
         }
         return -1;
+    }
+    //153.寻找旋转排序数组中的最小值
+    public int findMin(int[] nums) {
+        int L=0,R=nums.length-1;
+        while(L < R){
+            int mid = (L+R)/2;
+            if(nums[mid] < nums[R]){
+                R = mid ;
+            }else{
+                L =mid +1;
+            }
+        }
+        return nums[L];
+    }
+    //4.寻找两个正序数组的中位数,要求时间复杂度 ： O（log（m+n））
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int nums1_length = nums1.length;
+        int nums2_length = nums2.length;
+        double median=0.0;
+        if((nums1_length  + nums2_length) %2 ==0){
+            int midIndex_1= (nums1_length+nums2_length)/2 -1 ;
+            int midIndex_2= (nums1_length+nums2_length)/2  ;
+             median =(fun_4(nums1,nums2,midIndex_1+1) + fun_4(nums1,nums2,midIndex_2+1) )/2   ;
+        }else{
+            int midIndex= (nums1_length+nums2_length)/2 ;
+             median =fun_4(nums1,nums2,midIndex+1);
+        }
+        return median;
+    }
+
+    //todo
+    private double fun_4(int[] nums1, int[] nums2, int k) {
+        int len1=nums1.length;
+        int len2 = nums2.length;
+        int index1=0,index2=0;
+        while(true){
+            if(index1 == len1){
+                return nums2[index2+k-1];
+            }
+            if(index2 == len2){
+                return nums1[index1+k-1];
+            }
+            if(k == 1){
+                return Math.min(nums1[index1],nums2[index2]);
+            }
+            int kk = k/2;
+//            int =Math.min(index1+kk,len1)-1;
+//            int pivot1=nums1[cursor11];
+        }
 
 
     }
